@@ -1,49 +1,63 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Image, StatusBar, ScrollView, Button} from 'react-native';
-import Icon from 'react-native-vector-icons';
-import Logo from '../component/logo';
-import Registration from '../component/registration';
-import RegisterLogo from '../component/registerLogo';
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
+import tabBarIcon from '../component/tabBarIcon';
+import HomePage from './HomePage';
+import Cart from './Cart';
+import Order from './Order';
+import Profile from './Profile';
+import Category from './category';
 
-export default class Homes extends Component {
+export default class Home extends Component {
     static navigationOptions = {
-        title: 'Home Page'
+        header: null
     }
     render() {
-        const {goBack} = this.props.navigation;
-        return (
-          <View style={styles.container}>
-            <View style={styles.signUpText}>
-                <Text style={styles.textSignUp}>Welcome To BakBak</Text>
-                <Text style={styles.textSignUp}>{ this.props.navigation.state.params.Email }</Text>
-                <Button title = "Logout" onPress={() => goBack(null)}></Button>
-            </View>
-          </View>
+        return(
+            <AppContainer/>
         );
-      }
+    }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#455a64',
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+const BottomTabMaterial = createMaterialBottomTabNavigator(
+    {
+      Home:{
+          screen: HomePage,
+          navigationOptions: {
+              tabBarIcon: tabBarIcon('home')
+          }
+      },
+      Cart:{
+          screen:Cart,
+          navigationOptions:{
+              tabBarIcon: tabBarIcon('add-shopping-cart')
+          }
+        },
+      Order:{
+          screen:Order,
+          navigationOptions:{
+              tabBarIcon: tabBarIcon('track-changes')
+          }
+        },
+      Profile:{
+          screen:Profile,
+          navigationOptions:{
+              tabBarIcon: tabBarIcon('account-box')
+          }
+        }
     },
-    signUpText: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        marginVertical: 16,
-        flexDirection: 'row'
-    },
-    textSignUp: {
-        color : 'rgba(255,255,255,0.6)',
-        fontSize: 16
-    },
-    signUpButton: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: '500'
+    {
+      shifting: false,
+      activeColor: '#6200ee',
+      inactiveColor: '#828792',
+      barStyle: {
+        backgroundColor: '#f8f7f9',
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderStyle: 'solid',
+        borderColor: '#d0cfd0',
+      },
     }
-});
+  );
+
+const AppContainer = createAppContainer(BottomTabMaterial);

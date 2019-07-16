@@ -48,6 +48,7 @@ export default class Registration extends Component {
             }),
         }).then(res => res.json())
             .then((response) => {
+                // this.props.navigation.navigate('Login');
                 alert(response);
             })
             .catch((error) => {

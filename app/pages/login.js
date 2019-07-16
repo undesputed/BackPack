@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Image, StatusBar, TextInput} from 'react-native';
+import {Platform, 
+        StyleSheet, 
+        Text, 
+        View, 
+        Image, 
+        StatusBar, 
+        TextInput, 
+        AsyncStorage
+    } from 'react-native';
 import Icon from 'react-native-vector-icons';
 import Logo from '../component/logo';
 import Signup from './signup';
@@ -15,9 +23,9 @@ export default class Login extends Component {
         };
     }
 
-    userLogin = () => {
+    userLogin = async() => {
         const {username,password} = this.state;
-        var url = 'http://192.168.43.35/adminBakpak/android/loginUser.php';
+        var url = 'http://192.168.43.35:80/adminBakpak/android/loginUser.php';
         var data = {
             user : username,
             pass : password
@@ -35,8 +43,9 @@ export default class Login extends Component {
             })
         }).then((response) => response.json())
             .then((responseJson) => {
-                if(responseJson === 'Login Successfull'){
+                if(responseJson != 'Try Again'){
                     // alert(responseJson);
+                    AsyncStorage.setItem('user_id',responseJson);
                     this.props.navigation.navigate('Home', {Email : username});
                 }else{
                     alert(responseJson);

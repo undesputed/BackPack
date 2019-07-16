@@ -1,14 +1,12 @@
 
 import React, {Component} from 'react';
-import {StyleSheet, View, StatusBar} from 'react-native';
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+import {StyleSheet, View, StatusBar, ActivityIndicator, AsyncStorage} from 'react-native';
+import {createStackNavigator, createAppContainer, createSwitchNavigator} from 'react-navigation';
 
-import Routes from './app/Routes';
 import Login from './app/pages/login';
 import Signup from './app/pages/signup';
 import Home from './app/pages/Home';
-import Form from './app/component/form';
-import Register from './app/component/registration';
+import Category from './app/pages/category';
 
 export default class App extends Component {
   render() {
@@ -18,17 +16,39 @@ export default class App extends Component {
   }
 }
 
+
 const AppStackNavigator = createStackNavigator(
   {
     Login:  Login,
-    Register : Signup,
     Home : Home,
-    Form : Form
-  },
+    Register : Signup,
+    Category : Category
+  }
+  ,
   {
     initialRouteName : 'Login'
   }
 );
+
+// const AuthStack = createStackNavigator({Login: Login});
+
+// class AuthLoadingScreen extends Component{
+//   constructor(props){
+//     super(props);
+//     this._loadData();
+//   }
+//   render() {
+//     <View style={styles.container}>
+//       <ActivityIndicator/>
+//       <StatusBar/>
+//     </View>
+//   }
+
+//   _loadData = async() => {
+//     const isLoggedIn = await AsyncStorage.getItem('user_id');
+//     this.props.navigation.navigate(isLoggedIn !== ''? 'Auth' : 'App');
+//   }
+// }
 
 const AppContainer = createAppContainer(AppStackNavigator);
 
@@ -49,3 +69,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
+
+// export default createAppContainer(createSwitchNavigator(
+//   {
+//     AuthLoading: AuthLoadingScreen,
+//     App: AppStackNavigator,
+//     Auth: AuthStack
+//   },{
+//     initialRouteName: 'AuthLoading'
+//   }
+// ));
