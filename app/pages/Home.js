@@ -25,7 +25,7 @@ const BottomTabMaterial = createMaterialBottomTabNavigator(
       Home:{
           screen: HomePage,
           navigationOptions: {
-              tabBarIcon: tabBarIcon('home')
+              tabBarIcon: tabBarIcon('home'),
           }
       },
       Cart:{

@@ -96,3 +96,30 @@ app.get('/byItem/:id',function(req,res){
         }
     });
 });
+
+app.get('/inCart/:userId/:qty/:itemId', function(req,res){
+    con.query('insert into cart(user_id,quantity,item_id) values(?,?,?)',[req.params.userId,req.params.qty,req.params.itemId],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.post('/insertCart', function(req,res){
+    console.log(req.body);
+    var data = {user_id:req.body.userId,quantity:req.body.qty,item_id:req.body.itemId};
+    var sql = 'insert into cart set ?';
+    con.query(sql,data,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'Insert Success',
+            no: null,
+                user_id: req.body.userId,
+                quantity: req.body.qty,
+                item_id: req.body.itemId
+        });
+    });
+});

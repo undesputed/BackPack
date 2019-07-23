@@ -14,7 +14,8 @@ import {
     SafeAreaView,
     Dimensions,
     FlatList,
-    AsyncStorage
+    AsyncStorage,
+    RefreshControl
 } from 'react-native';
 import Category from '../component/Category';
 import Item from '../component/item';
@@ -42,7 +43,8 @@ export class HomePage extends Component {
         this.state = {
             search: '',
             data: [],
-            Item: []
+            Item: [],
+            refreshing: false
         };
     }
 
@@ -83,14 +85,21 @@ export class HomePage extends Component {
         this.props.navigation.push('Categ');
     }
 
+    _onRefresh =() =>{
+        this.setState({refreshing: true});
+        this.fetchItem().then(()=>{
+            this.setState({refreshing: false})
+        });
+        this.fetchCategory().then(()=>{
+            this.setState({refreshing: false})
+        });
+    }
+
     render() {
         const { search } = this.state;
         return(
             <SafeAreaView style={{flex:1}}>
-                <View style={{flex:1}} onStartShouldSetResponderCapture={() =>
-                    {
-                        this.setState({enabledScrollViewScroll: true})
-                    }}>
+                <View style={{flex:1}}>
                     <View style={{ height: 80, backgroundColor: 'white',
                         borderBottomWidth:1,
                         borderBottomColor:'#dddddd'}}>
@@ -101,6 +110,12 @@ export class HomePage extends Component {
                         />
                     </View>
                 <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.refreshing}
+                          onRefresh={this._onRefresh}
+                        />
+                      }
                     scrollEventThrottle={16}>
                     <View style={{ flex: 1, backgroundColor: 'white', paddingTop: 20}}>
                         <TouchableOpacity onPress={this.goToCategory}>
@@ -223,6 +238,7 @@ export class HomePage extends Component {
                             </View>
                         </View>
                     </View>
+                    
                 </ScrollView>
                 </View>
             </SafeAreaView>
@@ -245,5 +261,16 @@ const AppStackContainer = createStackNavigator({
         perItem: perItem
     }
 );
+
+AppStackContainer.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if(navigation.state.index > 0){
+        tabBarVisible = false;
+    }
+
+    return {
+        tabBarVisible,
+    };
+};
 
 const AppContainer = createAppContainer(AppStackContainer);

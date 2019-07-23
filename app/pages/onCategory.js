@@ -60,6 +60,7 @@ export default class onCategory extends Component {
                     data={this.state.data}
                     keyExtractor={(item,index) => index.toString()}
                     renderItem={({item}) => 
+                    <TouchableOpacity onPress={() => this.props.navigation.push('perItem',{id:item.item_id})}>                    
                         <View style={styles.container}>
                             <View style={styles.cardContainer}>
                                 <View style={styles.card}>
@@ -82,6 +83,7 @@ export default class onCategory extends Component {
                                 </View>
                             </View>
                         </View>
+                    </TouchableOpacity>
                     }
                     numColumns={2}
                 />

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Image, FlatList, Dimensions} from 'react-native';
+import {Platform, StyleSheet, Text, View, Image, FlatList, Dimensions, RefreshControl} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import ProgressBar from 'react-native-progress';
 
@@ -48,6 +48,14 @@ export default class Category extends Component {
     componentDidMount(){
         this.fetchCategory();
     }
+
+    _onRefresh(){
+        this.setState({refreshing: true});
+        this.fetchCategory().then(()=>{
+            this.setState({refreshing: false})
+        });
+    }
+
     
     render() {
         return(
@@ -57,7 +65,7 @@ export default class Category extends Component {
                     ItemSeparatorComponent={this.ItemSepartor}
                     showsVerticalScrollIndicator={false}
                     renderItem={({item}) =>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity activeOpacity={0.9} onPress={ () => this.props.navigation.push('onCategory',{id:item.id,name:item.sub_category_name})}>
                             <View style={styles.container}>
                                 <View style={styles.cardContainer}>
                                     <View style={styles.card}>
@@ -92,6 +100,12 @@ export default class Category extends Component {
                     }
                     numColumns={2}
                     keyExtractor={(item,index) => index.toString()}
+                    RefreshControl={
+                        <RefreshControl
+                            refreshing = {this.state.refreshing}
+                            onRefresh={this._onRefresh.bind(this)}
+                        />
+                    }
                 />
             // </View>
         );
