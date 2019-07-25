@@ -4,30 +4,93 @@ import {
   Text,
   View,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage,
+  ScrollView,
+  Dimensions
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icons from 'react-native-vector-icons/AntDesign';
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
+import updateProf from './updateProfile';
 
-export default class Profile extends Component {
+const Window = {
+  Width:Dimensions.get("window").width,
+  Height:Dimensions.get("window").height
+}
+
+export class Profile extends Component {
+
+  static navigationOptions = {
+    header: null
+}
+
+  constructor(props){
+    super(props);
+    this.state={
+      data: []
+    }
+  }
+
+  fetchUser = async() => {
+    const id = await AsyncStorage.getItem('user_id');
+    const response = await fetch('http://192.168.43.35:8080/getUser/'+id);
+    const user = await response.json();
+    this.setState({data:user})
+  }
+
+  componentDidMount(){
+    this.fetchUser();
+  }
 
   render() {
     return (
       <View style={styles.container}>
-          <View style={styles.header}></View>
-          <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
-          <View style={styles.body}>
-            <View style={styles.bodyContent}>
-              <Text style={styles.name}>John Doe</Text>
-              <Text style={styles.info}>UX Designer / Mobile developer</Text>
-              <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis, omittam deseruisse consequuntur ius an,</Text>
-              
-              <TouchableOpacity style={styles.buttonContainer}>
-                <Text>Opcion 1</Text>  
-              </TouchableOpacity>              
-              <TouchableOpacity style={styles.buttonContainer}>
-                <Text>Opcion 2</Text> 
-              </TouchableOpacity>
-            </View>
-        </View>
+        {
+          this.state.data.map((item,i) => {
+            return(
+              <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={{flex:1}}>
+                <View style={styles.header}></View>
+                <Image style={styles.avatar} source={require('../images/user_avatar.png')}/>
+                <View style={styles.body}>
+                  <View style={styles.bodyContent}>
+                    <Text style={styles.name}>{item.user_fname} {item.user_lname}</Text>
+                    <Text style={styles.info}>{item.user_phone}/{item.user_email}</Text>
+                    <Text style={styles.description}>{item.user_address} {item.user_postal_code}</Text>
+                    
+                    <View style={styles.detailBody}>
+                      <View style={styles.item}>
+                        <TouchableOpacity style={styles.infoContent}>
+                            <Text style={styles.info}><Icon name="home" size={20} /> Home</Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.item}>
+                        <TouchableOpacity style={styles.infoContent} onPress={() => this.props.navigation.navigate('updateProf')}>
+                          <Text style={styles.info}><Icon name="update" size={20} /> Update Profile</Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.item}>
+                        <TouchableOpacity style={styles.infoContent}>
+                          <Text style={styles.info}><Icon name="description" size={20} /> History</Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.item}>
+                        <TouchableOpacity style={styles.infoContent}>
+                          <Text style={styles.info}><Icons name="logout" size={20} /> Logout</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              </ScrollView>
+            );
+          })
+        }
       </View>
     );
   }
@@ -35,7 +98,7 @@ export default class Profile extends Component {
 
 const styles = StyleSheet.create({
   header:{
-    backgroundColor: "#00BFFF",
+    backgroundColor: "#ccc",
     height:200,
   },
   avatar: {
@@ -78,16 +141,39 @@ const styles = StyleSheet.create({
     marginTop:10,
     textAlign: 'center'
   },
-  buttonContainer: {
-    marginTop:10,
+  detailBody: {
+    width: Window.Width,
+    height: 200,
+    padding: 10
+  },
+  item: {
+    flexDirection: 'row'
+  },
+  infoContent:{
+    flex:1,
+    alignItems:'flex-start',
+    paddingLeft:5,
     height:45,
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom:20,
+    marginBottom:10,
     width:250,
-    borderRadius:30,
-    backgroundColor: "#00BFFF",
+    backgroundColor: '#ccc',
+    borderRadius: 5
   },
 });
- 
+
+export default class App extends Component{
+  render(){
+      return(
+          <AppContainer/>
+      );
+  }
+}
+
+const AppStackContainer = createStackNavigator({
+    Profile: Profile,
+    updateProf: updateProf
+  }
+);
+
+const AppContainer = createAppContainer(AppStackContainer);

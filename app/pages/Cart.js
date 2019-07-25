@@ -30,6 +30,10 @@ const Window = {
 
 export class Cart extends Component {
     
+    static navigtionOptions = {
+        header: null
+    }
+
     componentWillMount() {
         this.startHeadHeight = 80
         if(Platform.OS == 'android'){
@@ -99,44 +103,12 @@ export class Cart extends Component {
         const { search } = this.state;
         const { checked } = this.state
         let swipeBtns = [{
+            autoClose: true,
             text: 'Delete',
             backgroundColor: '#FF00FF',
             underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
             onPress: () => { this.deleteNote(rowData) }
           }];
-        // const swipteSettings = {
-        //     autoClost: true,
-        //     onClose:(secId,rowId,direction) => {
-        //         if(this.state.activeRowKey != null){
-        //             this.setState.({activeRowKey: this.props.index.key}); //key it must be the id of the item to be deleted
-        //         }
-        //     },
-        //     onOpen:(secId,rowId,direction) =>{
-        //         this.setState({activeRowKey: this.props.item.key})
-        //     },
-        //     right: [
-        //         {
-        //             onPress: ()=>{
-        //                 alert.alert(
-        //                     'Alert',
-        //                     'Are you sure you want to delete?',
-        //                     [
-        //                         {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        //                         {text: 'Yes', onPress: () =>{
-        //                             FlatList.splice(this.props.index,1);
-        //                         }},
-        //                     ],
-        //                     {
-        //                         cancelable: true
-        //                     }
-        //                 );
-        //             },
-        //             text: 'Delete', type: 'delete'
-        //         }
-        //     ],
-        //     rowId: this.props.index,
-        //     sectionId: 1
-        // };
         return(
                 <SafeAreaView style={{flex:1}}>
                     <View style={{flex:1}}>
@@ -227,14 +199,14 @@ export class Cart extends Component {
                     </View>
                     <View style={styles.footer}>
                         <View style={styles.footContainer}>
-                            <View style={{backgroundColor: 'white',width: Window.Width/2, }}>
+                            <View style={{backgroundColor: 'white',width:100,color: 'black' }}>
                                 <Checkbox
                                     status={this.state.checked}
                                     onPress={() => { this.setState({ checked: checked }); }}
                                 />
-                                <Text style={{fontWeight: 'bold', textColor: 'black'}}>Select All</Text>
+                                <Text style={{fontWeight: '300', color: 'black'}}>Select All</Text>
                             </View>
-                            <View style={{backgroundColor: '#FF00FF', width:Window.width/2}}>
+                            <View style={{backgroundColor: '#FF00FF', width:100}}>
                                 <Text style={{fontWeight: '300', fontSize: 20,alignSelf: 'center'}}>Buy Now</Text>
                             </View>
                         </View>

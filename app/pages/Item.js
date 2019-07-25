@@ -59,7 +59,7 @@ export default class App extends Component {
                 {id:4, image: "https://bootdey.com/img/Content/avatar/avatar2.png", name:"Finn DoRemiFaso",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
                 {id:5, image: "https://bootdey.com/img/Content/avatar/avatar3.png", name:"Maria More More",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
                 {id:6, image: "https://bootdey.com/img/Content/avatar/avatar4.png", name:"Clark June Boom!", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:7, image: "https://bootdey.com/img/Content/avatar/avatar5.png", name:"The googler",      comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
+                {id:7, image: "https://bootdey.com/img/Content/avatar/avatar5.png", name:"The googler",      comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
             ]
         }
     }
@@ -143,11 +143,17 @@ export default class App extends Component {
                                         rightButtonBackgroundColor='#111a0b'
                                         leftButtonBackgroundColor='#111a0b'/>
                                 </View>
+                                <ScrollView>
                                     <Text style={styles.descContent}>{item.item_description}</Text>
+                                </ScrollView>
                             </View>
+                            <Text style={styles.desc}>Comments:</Text>
+                            <View  style={{height: .5,
+                                width: "100%",
+                                backgroundColor: "#111a0b"}}/>
                             <FlatList
                                 style={styles.root}
-                                data={this.state.data}
+                                data={this.state.comment}
                                 extraData={this.state}
                                 ItemSeparatorComponent={() => {
                                 return (
@@ -177,22 +183,22 @@ export default class App extends Component {
                                 );
                                 }}/>
                         </ScrollView>
-                            <View style={styles.footer}>
-                                <Button style={styles.buttonStyle8}
-                                        textStyle={styles.textStyle8}
-                                        onPress={this.addingCart}
-                                        >
-                                    <View style={styles.customViewStyle}>
-                                        <Text style={{fontFamily: 'Avenir', color:'white'}}>
-                                        Add to Cart <Icon name="shopping-cart" size={15} />
-                                        </Text>
-                                    </View>
-                                </Button>
-                            </View>
                         </View>
                     );
                 })
             }
+                <View style={styles.footer}>
+                    <Button style={styles.buttonStyle8}
+                            textStyle={styles.textStyle8}
+                            onPress={this.addingCart}
+                            >
+                        <View style={styles.customViewStyle}>
+                            <Text style={{fontFamily: 'Avenir', color:'white'}}>
+                            Add to Cart <Icon name="shopping-cart" size={15} />
+                            </Text>
+                        </View>
+                    </Button>
+                </View>
         </View>
         );
     }
@@ -246,11 +252,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '300',
         paddingLeft: 5,
-        paddingHorizontal: 140
+        paddingHorizontal: 140,
+        paddingBottom: 10
     },
     descContent: {
         paddingLeft: 30,
-        height: 100
+        height: 200
     },
     buttonStyle8: {
         backgroundColor: '#1c313a',
@@ -292,7 +299,8 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         paddingVertical: 12,
         flexDirection: 'row',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        paddingBottom: 60
     },
     content: {
         marginLeft: 16,

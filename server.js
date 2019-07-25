@@ -87,6 +87,16 @@ app.get('/byCategory/:id', function(req,res){
     });
 });
 
+app.get('/getUser/:id', function(req,res){
+    con.query('select * from user where user_id = ?',[req.params.id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
 app.get('/byItem/:id',function(req,res){
     con.query('select *,(select supplier_name from supplier where item_setup.supp_id=supplier.supp_id)"supplier_name" from item_setup inner join sub_categories on item_setup.sub_category_id=sub_categories.id where item_setup.item_id = ?',[req.params.id],function(error,rows,fields){
         if(error) console.log(error);
@@ -123,3 +133,4 @@ app.post('/insertCart', function(req,res){
         });
     });
 });
+

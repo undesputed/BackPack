@@ -262,15 +262,15 @@ const AppStackContainer = createStackNavigator({
     }
 );
 
-AppStackContainer.navigationOptions = ({ navigation }) => {
-    let tabBarVisible = true;
-    if(navigation.state.index > 0){
-        tabBarVisible = false;
-    }
+// AppStackContainer.navigationOptions = ({ navigation }) => {
+//     let tabBarVisible = true;
+//     if(navigation.state.index < 0){
+//         tabBarVisible = false;
+//     }
 
-    return {
-        tabBarVisible,
-    };
-};
+//     return {
+//         tabBarVisible,
+//     };
+// };
 
 const AppContainer = createAppContainer(AppStackContainer);

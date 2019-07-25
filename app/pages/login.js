@@ -6,13 +6,13 @@ import {Platform,
         Image, 
         StatusBar, 
         TextInput, 
-        AsyncStorage
     } from 'react-native';
 import Icon from 'react-native-vector-icons';
 import Logo from '../component/logo';
 import Signup from './signup';
 import Form from '../component/form';
 import Button from 'apsl-react-native-button';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Login extends Component {
     constructor(props){

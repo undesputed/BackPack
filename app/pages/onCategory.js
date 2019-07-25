@@ -29,7 +29,8 @@ export default class onCategory extends Component {
     constructor(props){
         super(props);
         this.state={
-            data:[]
+            data:[],
+            refreshing: false
         }
     }
 
@@ -53,10 +54,19 @@ export default class onCategory extends Component {
     componentDidMount(){
         this.fetchCategory();
     }
+
+    _onRefresh = () =>{
+        this.setState({refreshing:true});
+        this.fetchCategory().then(() => {
+            this.setState({refreshing: false});
+        });
+    }
     
     render() {
         return (
                 <FlatList
+                    refreshing = {this.state.refreshing}
+                    onRefresh={this._onRefresh}
                     data={this.state.data}
                     keyExtractor={(item,index) => index.toString()}
                     renderItem={({item}) => 
