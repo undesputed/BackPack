@@ -10,18 +10,19 @@ import {Platform,
         SafeAreaView,
         FlatList,
         TouchableOpacity,
-        AsyncStorage,
         RefreshControl,
-        Dimensions
+        Dimensions,
+        CheckBox
     } from 'react-native';
 import { SearchBar } from 'react-native-elements';
-import { Checkbox } from 'react-native-paper';
+import AsyncStorage from '@react-native-community/async-storage';
 import NumericInput from 'react-native-numeric-input';
 import axios from 'axios';
 import Swipeout from 'react-native-swipeout';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
 import MyOrder from './myOrder';
+import checkout from './checkout';
 
 const Window = {
     Width:Dimensions.get("window").width,
@@ -30,7 +31,7 @@ const Window = {
 
 export class Cart extends Component {
     
-    static navigtionOptions = {
+    static navigationOptions = {
         header: null
     }
 
@@ -90,25 +91,40 @@ export class Cart extends Component {
         );
     }
 
+    deleteItem(id){
+        const cart_id = id
+        var url = 'http://192.168.43.35:8080/deleteCart';
+        axios.post(url,{
+            cart_id:cart_id
+        }).then(function (response){
+            console.log(response);
+        }).then(function (error){
+            console.log(error);
+        });
+        alert('Item Deleted');
+    }
+
     __onChecked = () =>{
         this.setState({checked: false});
     }
 
-    goToOrder = () => {
-        alert('Go to Order');
-        this.props.navigation.navigate('myOrder');
+    selectAllItem(){
+        this.setState({
+            checked:false
+        })
+    }
+
+    _onPressItem(id){
+        alert(id);
+    }
+
+    buyNow = () => {
+        this.props.navigation.push('Checkout');
     }
 
     render() {
         const { search } = this.state;
-        const { checked } = this.state
-        let swipeBtns = [{
-            autoClose: true,
-            text: 'Delete',
-            backgroundColor: '#FF00FF',
-            underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
-            onPress: () => { this.deleteNote(rowData) }
-          }];
+        const { checked } = this.state;
         return(
                 <SafeAreaView style={{flex:1}}>
                     <View style={{flex:1}}>
@@ -132,14 +148,21 @@ export class Cart extends Component {
                                         keyExtractor={(item,index) => index.toString()}
                                         renderItem={({item}) =>
                                         <View style={styles.contianer}>
-                                            <Swipeout right={swipeBtns}
-                                                autoClose='true'
+                                            <Swipeout right={[
+                                                    {
+                                                    text: 'Delete',
+                                                    backgroundColor: '#ccc',
+                                                    underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
+                                                    onPress: () => this.deleteItem(item.cart_id)
+                                                    }
+                                                ]}
+                                                autoClose={true}
                                                 backgroundColor= 'transparent'>
-                                                <TouchableOpacity>
+                                                <TouchableOpacity onPress={() => this._onPressItem(item.item_id)}>
                                                     <View style={styles.cartContainer}>
-                                                        <Checkbox
-                                                            status={this.state.checked}
-                                                            onPress={() => { this.setState({ checked: checked }); }}
+                                                        <CheckBox
+                                                            value={this.state.checked}
+                                                            onChange={() => this.selectAllItem()}
                                                         />
                                                         <View style={styles.imageContainer}>
                                                             <Image
@@ -170,26 +193,6 @@ export class Cart extends Component {
                                                 </TouchableOpacity>
                                             </Swipeout>
                                         </View>
-
-                                        // <View style={{flex:1,flexDirection:'row',padding:10}}>
-                                        //     <TouchableOpacity>
-                                        //         <Image
-                                        //             style={{width:100,height:100,paddingLeft:10}}
-                                        //             source={{uri:item.item_image}}
-                                        //         />
-                                        //         <View style={{paddingLeft: 10}}>
-                                        //             <Text style={{fontSize: 20, fontWeight:'500'}}>
-                                        //                 {item.item_name}
-                                        //             </Text>
-                                        //             <Text>
-                                        //                 {item.item_description}
-                                        //             </Text>
-                                        //             <Text>
-                                        //                 {item.unit_price} / {item.unit_measure}
-                                        //             </Text>
-                                        //         </View>
-                                        //     </TouchableOpacity>
-                                        // </View>
                                         }
                                         refreshing = {this.state.refreshing}
                                         onRefresh={this._onRefresh}
@@ -199,26 +202,19 @@ export class Cart extends Component {
                     </View>
                     <View style={styles.footer}>
                         <View style={styles.footContainer}>
-                            <View style={{backgroundColor: 'white',width:100,color: 'black' }}>
-                                <Checkbox
-                                    status={this.state.checked}
-                                    onPress={() => { this.setState({ checked: checked }); }}
+                            <View style={{backgroundColor: 'white',width:100,color: 'black', flex:1, flexDirection: 'row'}}>
+                                <CheckBox
+                                    value={this.state.checked}
+                                    onChange= {() => this.selectAllItem()}
                                 />
                                 <Text style={{fontWeight: '300', color: 'black'}}>Select All</Text>
                             </View>
                             <View style={{backgroundColor: '#FF00FF', width:100}}>
-                                <Text style={{fontWeight: '300', fontSize: 20,alignSelf: 'center'}}>Buy Now</Text>
+                                <TouchableOpacity onPress={this.buyNow}>
+                                    <Text style={{fontWeight: '300', fontSize: 20,alignSelf: 'center'}}>Buy Now</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        {/* <Button style={styles.buttonStyle8}
-                                textStyle={styles.textStyle8}
-                                >
-                            <View style={styles.customViewStyle}>
-                                <Text style={{fontFamily: 'Avenir', color:'white'}}>
-                                Add to Cart <Icon name="shopping-cart" size={15} />
-                                </Text>
-                            </View>
-                        </Button> */}
                     </View>
                 </SafeAreaView>
         );
@@ -285,7 +281,7 @@ export default class App extends Component{
 
 const AppStackContainer = createStackNavigator({
     Cart: Cart,
-    MyOrder: MyOrder
+    Checkout: checkout
 }
 );
 

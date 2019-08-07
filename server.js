@@ -117,6 +117,47 @@ app.get('/inCart/:userId/:qty/:itemId', function(req,res){
     });
 });
 
+app.post('/deleteCart', function(req,res){
+    console.log(req.body);
+    var data = {cart_id: req.body.cart_id};
+    var sql = 'delete from cart where ?';
+    con.query(sql,data,(err,result)=>{
+        if(err) throw err;
+        res.send({
+            status: 'item deleted',
+            no: null,
+                cart_id: req.body.cart_id
+        });
+    });
+});
+
+app.post('/getUserById', function(req,res){
+    console.log(req.body);
+    var data = {user_id:req.body.user_id};
+    var sql = 'select * from user where ?';
+    con.query(sql,data,(err,result) => {
+        if(err) throw err;
+        res.send({
+            status: 'Success',
+            no: null,
+                user_id: req.body.user_id
+        })
+    });
+});
+
+app.post('/updateUser/:user_id', function(req,res){
+    console.log(req.body);
+    var data1 = {user_fname:req.body.user_fname,user_lname:req.body.user_lname,user_address:req.body.user_address,user_postal_code:req.body.postal_code,user_email:req.body.user_email,user_phone:req.body.user_phone,user_username:req.body.user_username,user_password:req.body.user_password};
+    var sql = 'update user set ? where user_id = ?';
+    con.query(sql,[data1,req.params.user_id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows)
+        } 
+    });
+});
+
 app.post('/insertCart', function(req,res){
     console.log(req.body);
     var data = {user_id:req.body.userId,quantity:req.body.qty,item_id:req.body.itemId};
@@ -133,4 +174,3 @@ app.post('/insertCart', function(req,res){
         });
     });
 });
-

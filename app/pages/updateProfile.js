@@ -36,7 +36,8 @@ export default class updateProfile extends Component {
             user_email: '',
             user_phone: '',
             user_username: '',
-            user_password: ''
+            user_password: '',
+            confirm_pass: ''
         }
     }
 
@@ -52,8 +53,51 @@ export default class updateProfile extends Component {
     }
 
     updateUser = async() => {
-        const id = await AsyncStorage.getItem('user_id');
-        alert(id);
+        const user_id = await AsyncStorage.getItem('user_id');
+        const {user_fname,user_lname,user_address,postal_code,user_email,user_phone,user_username,user_password,confirm_pass} = this.state;
+        var url = 'http://192.168.43.35:8080/updateUser/'+user_id;
+        if(confirm_pass != ''){
+            if(user_password == confirm_pass){
+                axios.post(url, {
+                    user_fname: user_fname,
+                    user_lname: user_lname,
+                    user_address: user_address,
+                    postal_code: postal_code,
+                    user_email: user_email,
+                    user_phone:user_phone,
+                    user_username: user_username,
+                    user_password:user_password
+                }).then(function (response){
+                    console.log(response);
+                }).then(function (error){
+                    console.log(error);
+                });
+                alert('User Updated');
+            }else{
+                alert('Password not match');
+            }
+        }else{
+            axios.post(url, {
+                user_fname: user_fname,
+                user_lname: user_lname,
+                user_address: user_address,
+                postal_code: postal_code,
+                user_email: user_email,
+                user_phone:user_phone,
+                user_username: user_username,
+                user_password:user_password
+            }).then(function (response){
+                console.log(response);
+            }).then(function (error){
+                console.log(error);
+            });
+            alert('User Updated');
+            this.props.navigation.dispatch(StackActions.reset({
+                index: 0,
+                key: null,
+                actions: [NavigationActions.navigate({ routeName: 'Profile'})]
+            }))
+        }
     }
 
     render() {
