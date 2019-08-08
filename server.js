@@ -174,3 +174,62 @@ app.post('/insertCart', function(req,res){
         });
     });
 });
+
+app.post('/insertOrder',function(req,res){
+    console.log(req.body);
+    var data = {order_code:req.body.order_code,order_date:req.body.order_date,order_totalPrice:req.body.totalPrice,order_quantity:req.body.quantity,user_id:req.body.user_id,item_id:req.body.item_id,payment:req.body.payment,status:req.body.status};
+    var sql = 'insert into orders set ? ';
+    con.query(sql,data,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'Order placed',
+            no: null,
+            order_code:req.body.order_code,
+            order_date:req.body.order_date,
+            order_totalPrice:req.body.totalPrice,
+            order_quantity:req.body.quantity,
+            user_id:req.body.user_id,
+            item_id:req.body.item_id,
+            payment:req.body.payment,
+            status:req.body.status
+        })
+    });
+});
+
+app.post('/insertDelivery',function(req,res){
+    console.log(req.body);
+    var data = {delivery_date:req.body.order_date,delivery_status:req.body.status,user_id:req.body.user_id,item_id:req.body.item_id,order_code:req.body.order_code};
+    var sql = 'insert into delivery set ?';
+    con.query(sql,data,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'Delivery Placed',
+            no: null,
+            delivery_date:req.body.order_date,
+            delivery_status: req.body.status,
+            user_id:req.body.user_id,
+            item_id:req.body.item_id,
+            order_code:req.body.order_code
+        });
+    });
+});
+
+app.post('/insertHistory',function(req,res){
+    console.log(req.body);
+    var data = {order_code:req.body.order_code,hist_date:req.body.order_date,item_id:req.body.item_id,user_id:req.body.item_id};
+    var sql = 'insert into history set ? ';
+    con.query(sql,data,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'History Saved',
+            no: null,
+            order_code:req.body.order_code,
+            hist_date:req.body.order_date,
+            item_id:req.body.item_id,
+            user_id:req.body.user_id
+        })
+    });
+});

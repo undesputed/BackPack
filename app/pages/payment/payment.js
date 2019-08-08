@@ -19,8 +19,10 @@ const Window = {
 
 export default class Payment extends Component {
 
-    cod(){
-        alert('cod');
+    cod = () => {
+        const type= 'COD';
+        // alert(type);
+        this.props.navigation.navigate('Confirmation',{payment: type});
     }
 
     render() {
