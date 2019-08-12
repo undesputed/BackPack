@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
+import { NavigationActions, StackActions } from 'react-navigation';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Window = {
@@ -30,7 +31,8 @@ export default class Confirmation extends Component {
             items: [],
             total: '',
             user: [],
-            refreshing: false
+            refreshing: false,
+            get_items: []
         }
     }
 
@@ -92,53 +94,70 @@ export default class Confirmation extends Component {
         
             code += 1;
         // totalPrice += item.quantity * item.unit_price;
-        //     //insert delivery
-        //     var delivery = 'http://192.168.43.35:8080/insertDelivery';
-        //     axios.post(delivery,{
-        //         delivery_date: order_date,
-        //         delivery_status: status,
-        //         user_id:user_id,
-        //         item_id:item_id,
-        //         order_code:order_code
-        //     }).then(function(response){
-        //         console.log(response);
-        //     }).then(function(error){
-        //         console.log(error);
-        //     })
-        //     //insert history
-        //     var history = 'http://192.168.43.35:8080/insertHistory';
-        //     axios.post(history,{
-        //         order_code:order_code,
-        //         hist_date:order_date,
-        //         item_id:item_id,
-        //         user_id:user_id
-        //     })
         });
-        // alert(code);
         let order_code = beg_code+user_id+type+day+code;
         this.state.items.forEach((item) =>{
             let quantity = item.quantity;
             const item_id = item.item_id;
             total = quantity * item.unit_price;
             let totalPrice = total;
-            alert(quantity);
             var order = 'http://192.168.43.35:8080/insertOrder';
             axios.post(order,{
                 order_code:order_code,
                 order_date:order_date,
-                order_totalPrice:totalPrice,
-                order_quantity:quantity,
+                totalPrice:totalPrice,
+                quantity:quantity,
                 user_id:user_id,
                 item_id:item_id,
-                payement:payment,
+                payment:type,
                 status:status
             }).then(function(response){
                 console.log(response);
             }).then(function(error){
                 console.log(error);
             });
+            //insert delivery
+            var delivery = 'http://192.168.43.35:8080/insertDelivery';
+            axios.post(delivery,{
+                order_date: order_date,
+                status: status,
+                user_id:user_id,
+                item_id:item_id,
+                order_code:order_code
+            }).then(function(response){
+                console.log(response);
+            }).then(function(error){
+                console.log(error);
+            });
+             //insert history
+            var history = 'http://192.168.43.35:8080/insertHistory';
+            axios.post(history,{
+                order_code:order_code,
+                order_date:order_date,
+                item_id:item_id,
+                user_id:user_id
+            });
+            //delete cart
+            var delCart = 'http://192.168.43.35:8080/delCart/'+user_id+'/'+item_id;
+            axios.post(delCart).then(function(response){
+                console.log(response);
+            }).catch(function(error){
+                console.log(error);
+            });
+            //update item
+            var upItem = 'http://192.168.43.35:8080/updateItem/'+quantity+'/'+item_id;
+            axios.post(upItem).then(function(response){
+                console.log(response);
+            }).catch(function(error){
+                console.log(error); 
+            })
         });
-
+        alert('Order Placed');
+        this.props.navigation.dispatch(StackActions.reset({
+            index: 0,
+            key: null,
+            actions: [NavigationActions.navigate({ routeName: 'HomePage' })]
+        }))
     }
 
     render() {

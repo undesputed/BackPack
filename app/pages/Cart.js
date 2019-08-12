@@ -151,7 +151,7 @@ export class Cart extends Component {
                                             <Swipeout right={[
                                                     {
                                                     text: 'Delete',
-                                                    backgroundColor: '#ccc',
+                                                    backgroundColor: '#ccc',    
                                                     underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
                                                     onPress: () => this.deleteItem(item.cart_id)
                                                     }

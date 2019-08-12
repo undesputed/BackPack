@@ -233,3 +233,27 @@ app.post('/insertHistory',function(req,res){
         })
     });
 });
+
+app.post('/delCart/:user_id/:item_id',function(req,res){
+    console.log(req.body);
+    var sql = 'delete from cart where user_id = ? and item_id = ?';
+    con.query(sql,[req.params.user_id,req.params.item_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.post('/updateItem/:quantity/:item_id', function(req,res){
+    console.log(req.body);
+    var sql = 'update item_setup set item_quantity = item_quantity - ? where item_id = ?';
+    con.query(sql,[req.params.quantity,req.params.item_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows)
+        } 
+    });
+})
