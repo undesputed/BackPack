@@ -156,7 +156,7 @@ export default class Confirmation extends Component {
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
             key: null,
-            actions: [NavigationActions.navigate({ routeName: 'HomePage' })]
+            actions: [NavigationActions.navigate({ routeName: 'Shipping' })]
         }))
     }
 

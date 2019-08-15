@@ -27,6 +27,16 @@ con.connect(function (error){
     else console.log("connected");
 });
 
+app.get('/login/:user/:pass',function(req,res){
+    con.query('select * from user where user_username = ? and user_password = ? ',[req.params.user,req.params.pass],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
 app.get('/user', function(req,res){
     con.query('select * from user', function(error, rows, fields){
         if(error) console.log(error);

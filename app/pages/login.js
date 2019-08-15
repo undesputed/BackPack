@@ -19,8 +19,22 @@ export default class Login extends Component {
         super(props);
         this.state = {
             username: '',
-            password: ''
+            password: '',
+            user: []
         };
+    }
+
+    fetchUser = async() => {
+        // const { user,pass } = this.state;
+        const {user} = this.state.username;
+        const {pass} = this.state.password;
+        const response = await fetch('http://192.168.43.35:8080/login/'+user+'/'+pass);
+        const accnt = await response.json();
+        this.setState({user:accnt});
+    }
+
+    componentDidMount(){
+        this.fetchUser();
     }
 
     userLogin = async() => {

@@ -14,9 +14,9 @@ import {
     SafeAreaView,
     Dimensions,
     FlatList,
-    AsyncStorage,
     RefreshControl
 } from 'react-native';
+import { AsyncStorage } from '@react-native-community/async-storage';
 import Category from '../component/Category';
 import Item from '../component/item';
 import { SearchBar, Divider } from 'react-native-elements';
