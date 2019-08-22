@@ -8,9 +8,12 @@ import {Platform,
         TextInput, 
         ScrollView,
         TouchableOpacity,
-        Dimensions
+        Dimensions,
+        WebView,
+        Modal
     } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+// import WebView from 'react-native-webview';
 
 const Window = {
     width: Dimensions.get('window').width,
@@ -19,6 +22,14 @@ const Window = {
 
 export default class Payment extends Component {
 
+    constructor(props){
+        super(props);
+        this.state={
+            showModal: false,
+            status: 'Pending'
+        }
+    }
+
     cod = () => {
         const type= 'COD';
         // alert(type);
@@ -26,6 +37,8 @@ export default class Payment extends Component {
     }
 
     render() {
+        const {navigation} = this.props;
+        const totalPrice = navigation.getParam('totalPrice','N/A');
         return (
           <View style={styles.container}>
               <ScrollView>
@@ -35,19 +48,18 @@ export default class Payment extends Component {
                   </View>
                   <View style={{height: 5, width:Window.width}}/>
                     <View style={styles.paymentContainer}>
-                        <TouchableOpacity>
+                        <Modal
+                            visible={this.state.showModal}
+                            onRequestClose={() => this.setState({ showModal: false })}
+                        >
+                            <WebView source={{ uri: "http://192.168.43.35:8080"}}/>
+                        </Modal>
+                        <TouchableOpacity
+                            onPress={() => this.setState({showModal: true})}
+                        >
                         <Image
                             style={{height: 100, width: 250,padding: 10}}
                             source={require('../../images/paypal.png')}
-                        />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{height: 5, width:Window.width}}/>
-                    <View style={styles.paymentContainer}>
-                        <TouchableOpacity>
-                        <Image
-                            style={{height: 100, width: 250,padding: 10}}
-                            source={require('../../images/gcash.png')}
                         />
                         </TouchableOpacity>
                     </View>
