@@ -11,10 +11,6 @@ $con = mysqli_connect($hostname, $username, $password, $database);
 $json = file_get_contents('php://input');
 
 $obj = json_decode($json,true);
-$fname = $obj['fname'];
-$lname = $obj['lname'];
-$address = $obj['address'];
-$phone = $obj['phone'];
 $username = $obj['username'];
 $password = $obj['password'];
 
@@ -28,18 +24,23 @@ if(isset($check)){
 	echo $EmailExistJson; 
  }
 else{
-	$Sql_Query = "insert into user (user_fname,user_lname,user_address,user_phone,user_username,user_password) values ('$fname','$lname','$address','$phone','$username','$password')";
+	$Sql_Query = "insert into user (user_username,user_password) values ('$username','$password')";
+	$Sql_Details = "insert into user_details(user_username,user_password) values('$username','$password')";
  
-	if(mysqli_query($con,$Sql_Query)){
-		$MSG = 'User Registered Successfully' ;
-		$json = json_encode($MSG);
-		echo $json ;
-	}
-	 else{
-	 
-	 echo 'Try Again';
-	 
-	 }
+ 	if(mysqli_query($con,$Sql_Details)){
+		if(mysqli_query($con,$Sql_Query)){
+			$MSG = 'User Registered Successfully' ;
+			$json = json_encode($MSG);
+			echo $json ;
+		}
+		 else{
+		 
+		 echo 'Try Again';
+		 
+		 }
+ 	}else{
+ 		echo 'Try Again';
+ 	}
  }
  mysqli_close($con);
 ?>
