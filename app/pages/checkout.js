@@ -4,7 +4,7 @@ import {
     Text,
     StyleSheet
 } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator } from 'react-navigation';
 import AppNavigator from './lib/router';
 
 const AppIndex = createAppContainer(AppNavigator);

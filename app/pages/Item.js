@@ -14,9 +14,10 @@ import {
     SafeAreaView,
     Dimensions,
     FlatList,
-    AsyncStorage,
-    TextInput
+    TextInput,
+    RefreshControl
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Button from 'apsl-react-native-button';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { NavigationActions, StackActions } from 'react-navigation';
@@ -52,16 +53,18 @@ export default class App extends Component {
             value: 1,
             res:[],
             cart: [],
-            comment:[
-                {id:1, image: "https://bootdey.com/img/Content/avatar/avatar1.png", name:"Frank Odalthh",    comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:2, image: "https://bootdey.com/img/Content/avatar/avatar6.png", name:"John DoeLink",     comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:3, image: "https://bootdey.com/img/Content/avatar/avatar7.png", name:"March SoulLaComa", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:4, image: "https://bootdey.com/img/Content/avatar/avatar2.png", name:"Finn DoRemiFaso",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:5, image: "https://bootdey.com/img/Content/avatar/avatar3.png", name:"Maria More More",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:6, image: "https://bootdey.com/img/Content/avatar/avatar4.png", name:"Clark June Boom!", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-                {id:7, image: "https://bootdey.com/img/Content/avatar/avatar5.png", name:"The googler",      comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-            ]
+            comment:[],
+            refreshing: false,
+            youComment: ''
         }
+    }
+
+    fetchComment = async() => {
+        const {navigation} = this.props;
+        const id = navigation.getParam('id', 'N/A');
+        const ComRes = await fetch('http://192.168.43.35:8080/getComment/'+id);
+        const comments = await ComRes.json();
+        this.setState({comment:comments})
     }
     
     fetchItem = async() => {
@@ -86,6 +89,7 @@ export default class App extends Component {
 
     componentDidMount(){
         this.fetchItem();
+        this.fetchComment();
     }
 
     addingCart = async()=> {
@@ -112,6 +116,35 @@ export default class App extends Component {
         }))
     }
 
+    setComment = async() => {
+        const user_id = await AsyncStorage.getItem('user_id');
+        const {navigation} = this.props;
+        const item_id = navigation.getParam('id', 'N/A');
+        const comm = this.state.youComment;
+        const hours = new Date().getHours();
+        const min = new Date().getMinutes();
+        const sec = new Date().getSeconds();
+        const time = hours+':'+min+':'+sec;
+        var url = 'http://192.168.43.35:8080/insertComment';
+        axios.post(url,{
+            comment:comm,
+            user_id:user_id,
+            item_id:item_id,
+            time:time
+        }).then(function(response){
+            console.log(response);
+        }).then(function(error){
+            console.log(error);
+        })
+    }
+    
+    _onRefresh = () =>{
+        this.setState({refreshing: true});
+        this.fetchComment().then(()=>{
+            this.setState({refreshing: false})
+        });
+    }
+
     render() {
         return (
         <View style={styles.container}>
@@ -119,7 +152,14 @@ export default class App extends Component {
                 this.state.data.map((item,i) => {
                     return(
                         <View style={{flex:1}}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
+                        <ScrollView 
+                            refreshControl={
+                                <RefreshControl
+                                  refreshing={this.state.refreshing}
+                                  onRefresh={this._onRefresh}
+                                />
+                              }
+                            showsVerticalScrollIndicator={false}>
                             <View style={styles.prodContainer}>
                                 <Image source={{uri:item.item_image}} style={styles.prodImage}/>
                                 <Text style={styles.prodCat}>{item.sub_category_name}</Text>
@@ -147,11 +187,33 @@ export default class App extends Component {
                                     <Text style={styles.descContent}>{item.item_description}</Text>
                                 </ScrollView>
                             </View>
-                            <Text style={styles.desc}>Comments:</Text>
+                                <Text style={styles.desc}>Comments:</Text>
+                            <View style={{
+                                paddingLeft: 19,
+                                paddingRight: 16,
+                                paddingVertical: 12,
+                                flexDirection: 'row',
+                                alignItems: 'flex-start',
+                                paddingBottom:60
+                            }}>
+                                <Image style={styles.image} source={require('../images/user_avatar.png')}/>
+                                <TextInput style={styles.inputBox}
+                                    // underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder="Add a public comment..."
+                                    placeholderTextColor="black"
+                                    onChangeText = {youComment => this.setState({youComment})}
+                                    autoCapitalize = "none"
+                                    autoCorrect = {false}/>
+                                    <TouchableOpacity onPress={this.setComment}>
+                                        <Icon style={{paddingHorizontal:10, paddingVertical: 12}} name="send" size={25}/>
+                                    </TouchableOpacity>
+                            </View>
                             <View  style={{height: .5,
                                 width: "100%",
                                 backgroundColor: "#111a0b"}}/>
                             <FlatList
+                                refreshing = {this.state.refreshing}
+                                onRefresh={this._onRefresh}
                                 style={styles.root}
                                 data={this.state.comment}
                                 extraData={this.state}
@@ -161,24 +223,23 @@ export default class App extends Component {
                                 )
                                 }}
                                 keyExtractor={(item)=>{
-                                return item.id;
+                                return item.comment_id;
                                 }}
                                 renderItem={(item) => {
-                                const Notification = item.item;
                                 return(
                                     <View style={styles.commentContainer}>
-                                    <TouchableOpacity onPress={() => {}}>
-                                        <Image style={styles.image} source={{uri: Notification.image}}/>
-                                    </TouchableOpacity>
+                                    <TouchableOpacity >
+                                        <Image style={styles.image} source={require('../images/user_avatar.png')}/>
                                     <View style={styles.content}>
                                         <View style={styles.contentHeader}>
-                                        <Text  style={styles.name}>{Notification.name}</Text>
+                                        <Text  style={styles.name}>{item.item.user_fname} {item.item.user_lname}</Text>
                                         <Text style={styles.time}>
-                                            9:58 am
+                                            {item.item.time}
                                         </Text>
                                         </View>
-                                        <Text rkType='primary3 mediumLine'>{Notification.comment}</Text>
+                                        <Text rkType='primary3 mediumLine'>{item.item.comment}</Text>
                                     </View>
+                                    </TouchableOpacity>
                                     </View>
                                 );
                                 }}/>
@@ -328,5 +389,14 @@ const styles = StyleSheet.create({
     name:{
         fontSize:16,
         fontWeight:"bold",
+    },
+    inputBox: {
+        width: 230,
+        backgroundColor: 'rgba(255,255,255,0.3)',
+        borderRadius: 25,
+        paddingHorizontal: 16,
+        fontSize: 16,
+        color: 'black',
+        marginVertical: 1
     },
 });

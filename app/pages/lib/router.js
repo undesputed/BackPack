@@ -8,7 +8,7 @@ import {Platform,
         TextInput, 
         AsyncStorage
     } from 'react-native';
-import { createMaterialTopTabNavigator } from 'react-navigation';
+import { createMaterialTopTabNavigator,createStackNavigator } from 'react-navigation';
 import shipping from '../payment/shipping';
 import payment from '../payment/payment';
 import confirmation from '../payment/confirmation';

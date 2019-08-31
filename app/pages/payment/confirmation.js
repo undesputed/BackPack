@@ -12,8 +12,8 @@ import {Platform,
         TouchableOpacity
     } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { FlatList } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Entypo';
+import { FlatList, TouchableHighlight } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { NavigationActions, StackActions } from 'react-navigation';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -32,7 +32,7 @@ export default class Confirmation extends Component {
             total: '',
             user: [],
             refreshing: false,
-            get_items: []
+            get_items: [],
         }
     }
 
@@ -90,11 +90,6 @@ export default class Confirmation extends Component {
         const beg_code = '2111';
         
         const status = 'Pending';
-        this.state.items.forEach((item) => {
-        
-            code += 1;
-        // totalPrice += item.quantity * item.unit_price;
-        });
         let order_code = beg_code+user_id+type+day+code;
         this.state.items.forEach((item) =>{
             let quantity = item.quantity;
@@ -129,7 +124,7 @@ export default class Confirmation extends Component {
             }).then(function(error){
                 console.log(error);
             });
-             //insert history
+            //insert history
             var history = 'http://192.168.43.35:8080/insertHistory';
             axios.post(history,{
                 order_code:order_code,
@@ -153,20 +148,18 @@ export default class Confirmation extends Component {
             })
         });
         alert('Order Placed');
-        this.props.navigation.dispatch(StackActions.reset({
-            index: 0,
-            key: null,
-            actions: [NavigationActions.navigate({ routeName: 'Shipping' })]
-        }))
+        this.props.navigation.navigate('Shipping');
     }
 
     render() {
+        const {navigation} = this.props;
+        const payment = navigation.getParam('payment','N/A');
         return (
           <View style={styles.container}>
               <ScrollView>
                 <View style={{flex: 1, height: 125, width: Window.width, flexDirection: 'row'}}>
                     <View style={{padding: 10}}>
-                        <Icon name="location" color='skyblue' size={25}/>
+                        <Icon name="location-on" color='skyblue' size={25}/>
                     </View>
                     <TouchableOpacity>
                     <View>
@@ -222,13 +215,13 @@ export default class Confirmation extends Component {
                 <View style={{height:3,width: Window.width,backgroundColor:'#B0CBDF',paddingBottom: 3}}/>
                 <View style={{flex:1, flexDirection: 'row',backgroundColor:'#F0F0F0'}}>
                     <View style={{paddingTop:10,paddingLeft:10,paddingBottom:10}}>
-                        <Icon name="credit" size={25}/>
+                        <Icons name="credit-card" size={25}/>
                     </View>
                     <View style={{paddingTop: 10,paddingRight: 10}}>
                         <Text style={{fontWeight: '300',fontSize: 16}}>Payment Method:</Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{fontWeight: 'bold'}}>COD(Cash On Delivery)</Text>
+                        <Text style={{fontWeight: 'bold'}}>{payment}</Text>
                     </View>
                 </View>
                 <View style={{height:3,width: Window.width,backgroundColor:'#B0CBDF',paddingBottom: 3}}/>

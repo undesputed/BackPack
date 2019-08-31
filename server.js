@@ -130,10 +130,20 @@ app.get('/user', function(req,res){
         if(error) console.log(error);
         else{
             console.log(rows);
-            res.send(rows)
+            res.send(rows);
         }
     });
 });
+
+app.get('/getHistoryByDel/:id',function(req,res){
+    con.query('select * from history inner join delivery on history.order_code = delivery.order_code',function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
 
 app.get('/category', function(req,res){
     con.query('select * from sub_categories', function(error,rows,fields){
@@ -186,7 +196,17 @@ app.get('/byCategory/:id', function(req,res){
 });
 
 app.get('/getUser/:id', function(req,res){
-    con.query('select * from user where user_id = ?',[req.params.id],function(error,rows,fields){
+    con.query('select * from user inner join user_details on user.user_username = user_details.user_username where user.user_id = ? and user_details.user_status = "ACTIVE"',[req.params.id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/getUserDetails/:id', function(req,res){
+    con.query('select * from user inner join user_details on user.user_username = user_details.user_username where user.user_id = ?',[req.params.id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -316,7 +336,7 @@ app.post('/insertDelivery',function(req,res){
 
 app.post('/insertHistory',function(req,res){
     console.log(req.body);
-    var data = {order_code:req.body.order_code,hist_date:req.body.order_date,item_id:req.body.item_id,user_id:req.body.item_id};
+    var data = {order_code:req.body.order_code,hist_date:req.body.order_date,item_id:req.body.item_id,user_id:req.body.user_id};
     var sql = 'insert into history set ? ';
     con.query(sql,data,(err,result)=>{
         if(err) throw err;
@@ -330,6 +350,24 @@ app.post('/insertHistory',function(req,res){
             user_id:req.body.user_id
         })
     });
+});
+
+app.post('/insertComment', function(req,res){
+    console.log(req.body);
+    var data = {comment:req.body.comment,user_id:req.body.user_id,item_id:req.body.item_id,time:req.body.time};
+    var sql = 'insert into comments set ?';
+    con.query(sql,data,(err,result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'Comment inserted',
+            no: null,
+            comment:req.body.comment,
+            user_id:req.body.user_id,
+            item_id:req.body.item_id,
+            time:req.body.time
+        })
+    })
 });
 
 app.post('/delCart/:user_id/:item_id',function(req,res){
@@ -353,5 +391,39 @@ app.post('/updateItem/:quantity/:item_id', function(req,res){
             console.log(rows);
             res.send(rows)
         } 
+    });
+})
+
+app.post('/updateDetailsByStatus/:status', function(req,res){
+    console.log(req.body);
+    var sql = "update user_details set user_status = 'INACTIVE' where user_status = ?";
+    con.query(sql,[req.params.status], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+app.post('/updateDetailsById/:id', function(req,res){
+    console.log(req.body);
+    var sql = "update user_details set user_status = 'ACTIVE' where details_id = ?";
+    con.query(sql,[req.params.id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+app.get('/getComment/:item_id', function(req,res){
+    con.query('SELECT * FROM comments WHERE comments.item_id = ?',[req.params.item_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
     });
 })

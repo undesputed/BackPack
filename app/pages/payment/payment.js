@@ -13,6 +13,7 @@ import {Platform,
         Modal
     } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator } from 'react-navigation';
 // import WebView from 'react-native-webview';
 
 const Window = {
@@ -32,8 +33,19 @@ export default class Payment extends Component {
 
     cod = () => {
         const type= 'COD';
-        // alert(type);
-        this.props.navigation.navigate('Confirmation',{payment: type});
+        this.props.navigation.navigate('Confirmation',{payment:type});
+    }
+
+    handleResponse = data => {
+        const type= 'Paypal';
+        if(data.title === 'success'){
+            this.setState({showModal: false, state: 'Completed'});
+            this.props.navigation.navigate('Confirmation',{payment: type});
+        }else if(data.title === 'cancel'){
+            this.setState({showModal: false, state: 'Canceled'});
+        }else{
+            return;
+        }
     }
 
     render() {
@@ -52,7 +64,9 @@ export default class Payment extends Component {
                             visible={this.state.showModal}
                             onRequestClose={() => this.setState({ showModal: false })}
                         >
-                            <WebView source={{ uri: "http://192.168.43.35:8080"}}/>
+                            <WebView source={{ uri: "http://192.168.43.35:8080"}}
+                                onNavigationStateChange={data => this.handleResponse(data)}
+                            />
                         </Modal>
                         <TouchableOpacity
                             onPress={() => this.setState({showModal: true})}

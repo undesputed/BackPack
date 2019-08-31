@@ -5,14 +5,17 @@ import {
   View,
   Image,
   TouchableOpacity,
-  AsyncStorage,
   ScrollView,
-  Dimensions
+  Dimensions,
+  RefreshControl
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/AntDesign';
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
 import updateProf from './updateProfile';
+import history from './history';
+import address from './address';
 
 const Window = {
   Width:Dimensions.get("window").width,
@@ -28,7 +31,8 @@ export class Profile extends Component {
   constructor(props){
     super(props);
     this.state={
-      data: []
+      data: [],
+      refreshing: false
     }
   }
 
@@ -43,22 +47,41 @@ export class Profile extends Component {
     this.fetchUser();
   }
 
+  updateAddress = async() => {
+      this.props.navigation.navigate('Address');
+  }
+
+  _onRefresh =() =>{
+    this.setState({refreshing: true});
+    this.fetchUser().then(()=>{
+        this.setState({refreshing: false})
+    });
+}
+
   render() {
     return (
       <View style={styles.container}>
         {
           this.state.data.map((item,i) => {
             return(
-              <ScrollView showsVerticalScrollIndicator={false}>
+              <ScrollView showsVerticalScrollIndicator={false}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={this._onRefresh}
+                  />
+                }
+              >
               <View style={{flex:1}}>
                 <View style={styles.header}></View>
                 <Image style={styles.avatar} source={require('../images/user_avatar.png')}/>
                 <View style={styles.body}>
                   <View style={styles.bodyContent}>
                     <Text style={styles.name}>{item.user_fname} {item.user_lname}</Text>
-                    <Text style={styles.info}>{item.user_phone}/{item.user_email}</Text>
-                    <Text style={styles.description}>{item.user_address} {item.user_postal_code}</Text>
-                    
+                    <TouchableOpacity onPress={this.updateAddress}>
+                      <Text style={styles.info}>{item.user_phone}/{item.user_email}</Text>
+                      <Text style={styles.description}>{item.user_address} {item.user_postal_code}</Text>
+                    </TouchableOpacity>
                     <View style={styles.detailBody}>
                       <View style={styles.item}>
                         <TouchableOpacity style={styles.infoContent}>
@@ -73,7 +96,7 @@ export class Profile extends Component {
                       </View>
 
                       <View style={styles.item}>
-                        <TouchableOpacity style={styles.infoContent}>
+                        <TouchableOpacity style={styles.infoContent} onPress={() => this.props.navigation.navigate('History')}>
                           <Text style={styles.info}><Icon name="description" size={20} /> History</Text>
                         </TouchableOpacity>
                       </View>
@@ -172,7 +195,9 @@ export default class App extends Component{
 
 const AppStackContainer = createStackNavigator({
     Profile: Profile,
-    updateProf: updateProf
+    updateProf: updateProf,
+    History: history,
+    Address: address
   }
 );
 

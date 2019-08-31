@@ -12,9 +12,7 @@ import {Platform,
         TouchableOpacity,
         RefreshControl
     } from 'react-native';
-import { thisTypeAnnotation } from '@babel/types';
 import AsynStorage from '@react-native-community/async-storage';
-import AsyncStorage from '@react-native-community/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/AntDesign';
 
@@ -50,10 +48,6 @@ export default class Shipping extends Component {
         this.fetchData().then(()=>{
             this.setState({refreshing: false})
         });
-    }
-
-    proceed = (totalPrice) => {
-        this.props.navigation.navigate('Payment',{totalPrice : totalPrice});
     }
 
     ItemSepartor = () =>{
@@ -113,7 +107,7 @@ export default class Shipping extends Component {
                         <Text>Total Cost: ₱{totalPrice}</Text>
                     </View>
                     <View style={{height: 10, width:Window.width}}></View>
-                    <TouchableOpacity onPress={this.proceed(totalPrice)}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Payment',{totalPrice: totalPrice})}>
                         <View style={{flex:1,alignSelf:'center'}}>
                             <View style={{backgroundColor: 'skyblue',borderRadius: 5, width: 350}}>
                                 <Text style={{fontSize: 15, textAlign: 'center', padding: 12, fontWeight: 'bold'}}>PROCEED  <Icon name="forward" size={20}/></Text>
