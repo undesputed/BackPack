@@ -59,15 +59,15 @@ export default class MyOrder extends Component {
           const {navigation} = this.props;
           const orderCode = navigation.getParam('orderCode','N/A');
           const status = 'Cancelled';
-          var sql = 'http://192.169.43.35:8080/cancelOrder/'+status+'/'+orderCode;
+          var sql = 'http://192.168.43.35:8080/cancelOrder/'+status+'/'+orderCode;
           axios.post(sql).then(function(response){
               console.log(response);
           }).then(function(error){
               console.log(error);
           });
-          alert(status);
-        //   alert('Order Cancelled');
-        //   this.props.navigation.goBack();
+        //   alert(status);
+          alert('Order Cancelled');
+          this.props.navigation.goBack();
       }
 
       _onRefresh = () =>{
@@ -132,7 +132,7 @@ export default class MyOrder extends Component {
                                         <Text style={{fontWeight: '400'}}>{item.item_name}</Text>
                                         <Text style={{fontWeight: '400'}}>Brand: {item.item_brand}</Text>
                                         <Text>₱ {item.unit_price}</Text>
-                                        <Text style={{position: 'absolute', right: 20, bottom: 10}}>x{item.quantity}</Text>
+                                        <Text style={{position: 'absolute', right: 20, bottom: 10}}>x{item.order_quantity}</Text>
                                     </View>
                                 </View>
                             );

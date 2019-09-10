@@ -146,7 +146,7 @@ app.get('/geItemsByOrder/:order_code',function(req,res){
 });
 
 app.get('/getOrderCode/:user_id', function(req,res){
-    con.query('select distinct(order_code),status,payment from orders where status in ("Pending","On The Way") and user_id = ?',[req.params.user_id],function(error,rows,fields){
+    con.query('select distinct(order_code),status,payment from orders where status in ("Pending","On The Way","Cancelled") and user_id = ?',[req.params.user_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -437,18 +437,6 @@ app.post('/updateDetailsByStatus/:status', function(req,res){
     })
 });
 
-app.post('/cancelOrder/:status/:order_code', function(req,res){
-    console.log(req.body);
-    var sql = 'update orders set status = ? where order_cod = ?';
-    con.query(sql,[req.params.status,req.params.order_code], function(error,rows,fields){
-        if(error) console.log(error);
-        else{
-            console.log(rows);
-            res.send(rows);
-        }
-    });
-});
-
 app.post('/updateDetailsById/:id', function(req,res){
     console.log(req.body);
     var sql = "update user_details set user_status = 'ACTIVE' where details_id = ?";
@@ -469,4 +457,14 @@ app.get('/getComment/:item_id', function(req,res){
             res.send(rows);
         }
     });
+})
+
+app.post('/cancelOrder/:status/:order_code', function(req,res){
+    con.query('update orders set status = ? where order_code = ?',[req.params.status,req.params.order_code],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
 })
