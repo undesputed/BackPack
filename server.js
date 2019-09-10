@@ -135,6 +135,37 @@ app.get('/user', function(req,res){
     });
 });
 
+app.get('/geItemsByOrder/:order_code',function(req,res){
+    con.query('SELECT * FROM orders INNER JOIN item_setup ON orders.item_id=item_setup.item_id WHERE orders.order_code = ?',[req.params.order_code],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/getOrderCode/:user_id', function(req,res){
+    con.query('select distinct(order_code),status,payment from orders where status in ("Pending","On The Way") and user_id = ?',[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.get('/getOrderItems/:user_id', function(req,res){
+    con.query('select * from orders inner join item_setup on orders.item_id = item_setup.item_id where orders.status in ("Pending","On The Way") and orders.user_id = ?',[req.params.user_id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+
 app.get('/getHistoryByDel/:id',function(req,res){
     con.query('select * from history inner join delivery on history.order_code = delivery.order_code',function(error,rows,fields){
         if(error) console.log(error);
@@ -392,7 +423,7 @@ app.post('/updateItem/:quantity/:item_id', function(req,res){
             res.send(rows)
         } 
     });
-})
+});
 
 app.post('/updateDetailsByStatus/:status', function(req,res){
     console.log(req.body);
@@ -404,7 +435,19 @@ app.post('/updateDetailsByStatus/:status', function(req,res){
             res.send(rows);
         }
     })
-})
+});
+
+app.post('/cancelOrder/:status/:order_code', function(req,res){
+    console.log(req.body);
+    var sql = 'update orders set status = ? where order_cod = ?';
+    con.query(sql,[req.params.status,req.params.order_code], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
 
 app.post('/updateDetailsById/:id', function(req,res){
     console.log(req.body);

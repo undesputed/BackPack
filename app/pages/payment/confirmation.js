@@ -124,14 +124,6 @@ export default class Confirmation extends Component {
             }).then(function(error){
                 console.log(error);
             });
-            //insert history
-            var history = 'http://192.168.43.35:8080/insertHistory';
-            axios.post(history,{
-                order_code:order_code,
-                order_date:order_date,
-                item_id:item_id,
-                user_id:user_id
-            });
             //delete cart
             var delCart = 'http://192.168.43.35:8080/delCart/'+user_id+'/'+item_id;
             axios.post(delCart).then(function(response){

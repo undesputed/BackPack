@@ -8,6 +8,7 @@ import Cart from './Cart';
 import Order from './Order';
 import Profile from './Profile';
 import Category from './category';
+import Notification from './notification';
 
 export default class Home extends Component {
     static navigationOptions = {
@@ -34,6 +35,12 @@ const BottomTabMaterial = createMaterialBottomTabNavigator(
               tabBarIcon: tabBarIcon('add-shopping-cart')
           }
         },
+      Notification:{
+        screen: Notification,
+        navigationOptions:{
+            tabBarIcon: tabBarIcon('notifications')
+        }
+      },
       Order:{
           screen:Order,
           navigationOptions:{
