@@ -466,5 +466,46 @@ app.post('/cancelOrder/:status/:order_code', function(req,res){
             console.log(rows);
             res.send(rows);
         }
-    })
+    });
+});
+
+app.get('/cancelDelivery/:status/:order_code', function(req,res){
+    con.query('update delivery set delivery_status = ? where order_code = ?',[req.params.status,req.params.order_code], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/lastOrderCode', function(req,res){
+    con.query('select order_code from orders order by order_id desc limit 1', function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/delHistory/:order_code', function(req,res){
+    con.query('delete from history where order_code = ?', [req.params.order_code], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/getHistory/:user_id', function(req,res){
+    var sql = 'select history.order_code, history.hist_date,history.user_id, history.item_id,delivery.delivery_date,delivery.notif_status,delivery.delivery_status from history,delivery,item_setup where history.order_code = delivery.order_code and delivery.delivery_status in ("Cancelled","Delivered") and item_setup.item_id = history.item_id and item_setup.item_id = delivery.item_id and history.user_id = ?';
+    con.query(sql,[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
 })

@@ -66,6 +66,7 @@ export default class Payment extends Component {
                         >
                             <WebView source={{ uri: "http://192.168.43.35:8080"}}
                                 onNavigationStateChange={data => this.handleResponse(data)}
+                                injectedJavaScript={'document.f1.submit()'}
                             />
                         </Modal>
                         <TouchableOpacity

@@ -84,7 +84,7 @@ export class Order extends Component {
                             this.state.ordersCode.map((item,i) => {
                                 return(
                                     <View style={styles.cardContainer}>
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('myOrder',{orderCode:item.order_code,payment:item.payment})}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('myOrder',{orderCode:item.order_code.toString()})}>
                                             <View style={{padding:10}}>
                                                 <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
                                             </View>
@@ -97,6 +97,7 @@ export class Order extends Component {
                             })
                         }
                     </View>
+                    <View style={{height: 10, width:Window.width}}/>
                     </ScrollView>
             </View>
         );

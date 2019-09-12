@@ -65,7 +65,12 @@ export default class MyOrder extends Component {
           }).then(function(error){
               console.log(error);
           });
-        //   alert(status);
+          var sql2 = 'http://192.168.43.35:8080/cancelDelivery/'+status+'/'+orderCode;
+          axios.post(sql2).then(function(response){
+            console.log(response);
+          }).then(function(error){
+            console.log(error);
+          });
           alert('Order Cancelled');
           this.props.navigation.goBack();
       }

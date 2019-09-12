@@ -33,7 +33,14 @@ export default class Confirmation extends Component {
             user: [],
             refreshing: false,
             get_items: [],
+            lastCode: []
         }
+    }
+
+    fetchLastCode = async() =>{
+        const response = await fetch('http://192.168.43.35:8080/lastOrderCode');
+        const code = await response.json();
+        this.setState({lastCode:code});
     }
 
     fetchData = async() => {
@@ -53,6 +60,7 @@ export default class Confirmation extends Component {
     componentDidMount(){
         this.fetchData();
         this.fetchUser();
+        this.fetchLastCode();
     }
 
     _onRefresh = () =>{
@@ -90,7 +98,10 @@ export default class Confirmation extends Component {
         const beg_code = '2111';
         
         const status = 'Pending';
-        let order_code = beg_code+user_id+type+day+code;
+        var order_code = 0;
+        this.state.lastCode.forEach((item) => {
+            order_code = item.order_code + 1;    
+        });
         this.state.items.forEach((item) =>{
             let quantity = item.quantity;
             const item_id = item.item_id;
