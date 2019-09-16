@@ -94,10 +94,13 @@ export default class Confirmation extends Component {
         var date = date+year;
         var order_date = year+ '-' + month + '-' + day;
         
+        var deliveryDay = new Date().getDate() + 7;
+        var delviery_date = year+'-'+month+'-'+deliveryDay;
+
         let code = 0;
         const beg_code = '2111';
         
-        const status = 'Pending';
+        const status = 'PENDING';
         var order_code = 0;
         this.state.lastCode.forEach((item) => {
             order_code = item.order_code + 1;    
@@ -125,7 +128,7 @@ export default class Confirmation extends Component {
             //insert delivery
             var delivery = 'http://192.168.43.35:8080/insertDelivery';
             axios.post(delivery,{
-                order_date: order_date,
+                order_date: delviery_date,
                 status: status,
                 user_id:user_id,
                 item_id:item_id,

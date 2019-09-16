@@ -470,7 +470,9 @@ app.post('/cancelOrder/:status/:order_code', function(req,res){
 });
 
 app.get('/cancelDelivery/:status/:order_code', function(req,res){
-    con.query('update delivery set delivery_status = ? where order_code = ?',[req.params.status,req.params.order_code], function(error,rows,fields){
+    console.log(req.body);
+    const sql = 'update delivery set delivery_status = ? where order_code = ?';
+    con.query(sql,[req.params.status,req.params.order_code],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -509,3 +511,14 @@ app.get('/getHistory/:user_id', function(req,res){
         }
     });
 })
+
+app.get('/getDateByOrder/:order_code', function(req,res){
+    var sql = 'select delivery_date from delivery where order_code = ?';
+    con.query(sql,[req.params.order_code],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});

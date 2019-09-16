@@ -5,11 +5,11 @@ import {Platform,
         View, 
         Image, 
         StatusBar, 
-        TextInput, 
-        AsyncStorage,
+        TextInput,
         Dimensions,
         TouchableOpacity
     } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,7 +31,8 @@ export default class MyOrder extends Component {
           this.state = {
               items: [],
               refreshing: false,
-              user: []
+              user: [],
+              date: []
           }
       }
 
@@ -49,16 +50,25 @@ export default class MyOrder extends Component {
         const users = await response.json();
         this.setState({user:users})
     }
+        
+      fetchDate = async() => {
+          const {navigation} = this.props;
+          const orderCode = navigation.getParam('orderCode','N/A');
+          const response = await fetch('http://192.168.43.35:8080/getDateByOrder/'+orderCode);
+          const getDate = await response.json();
+          this.setState({date:getDate});
+      }
 
       componentDidMount(){
           this.fetchItems();
           this.fetchUser();
+          this.fetchDate();
       }
 
       cancelOrder = () => {
           const {navigation} = this.props;
           const orderCode = navigation.getParam('orderCode','N/A');
-          const status = 'Cancelled';
+          const status = 'CANCELLED';
           var sql = 'http://192.168.43.35:8080/cancelOrder/'+status+'/'+orderCode;
           axios.post(sql).then(function(response){
               console.log(response);
@@ -74,6 +84,37 @@ export default class MyOrder extends Component {
           alert('Order Cancelled');
           this.props.navigation.goBack();
       }
+
+      renderButton(){
+        const {navigation} = this.props;
+        const status = navigation.getParam('status', 'N/A');
+        const orderCode = navigation.getParam('orderCode','N/A');
+        var day = new Date().getDate();
+        var month = new Date().getMonth()+1;
+        var year = new Date().getFullYear();
+        var date = year+'-'+month+'-'+day;
+        // this.state.date.forEach((item) => {
+            if(status == 'ON THE WAY'){
+                // if(date >= item.delivery_date){
+                //     return <TouchableOpacity><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+                //             <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>DELIVERED</Text>
+                //         </View></TouchableOpacity>
+                // }else{
+                    return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+                            <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>ON THE WAY</Text>
+                        </View>
+                // }
+            }else if(status == 'PENDING'){
+                return <TouchableOpacity onPress={this.cancelOrder}><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'skyblue',alignSelf:'center',borderRadius: 5}}>
+                        <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Cancel Order</Text>
+                    </View></TouchableOpacity>
+            }else if(status == 'CANCELLED'){
+                return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+                        <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>CANCELLED</Text>
+                    </View>
+            }
+        // });
+    }
 
       _onRefresh = () =>{
           this.setState({refreshing:true});
@@ -158,11 +199,9 @@ export default class MyOrder extends Component {
                 </View>
                 <View style={{height:3,width: Window.width,backgroundColor:'#B0CBDF',paddingBottom: 3}}/>
                 <View style={{height:3,width: Window.width,backgroundColor:'white',paddingBottom: 3}}/>
-                <TouchableOpacity onPress={this.cancelOrder}>
-                    <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'skyblue',alignSelf:'center',borderRadius: 5}}>
-                        <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Cancel Order</Text>
-                    </View>
-                </TouchableOpacity>
+                <View style={{flex: 1}}>
+                    {this.renderButton()}
+                </View>
             </ScrollView>
           </View>
         );

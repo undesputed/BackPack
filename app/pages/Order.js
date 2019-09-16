@@ -65,6 +65,10 @@ export class Order extends Component {
         });
     }
 
+    showOrder(orderCode,status,payment) {
+        this.props.navigation.navigate('myOrder',{orderCode,status,payment})
+    }
+
 
     render() {
         return(
@@ -84,7 +88,8 @@ export class Order extends Component {
                             this.state.ordersCode.map((item,i) => {
                                 return(
                                     <View style={styles.cardContainer}>
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('myOrder',{orderCode:item.order_code.toString()})}>
+                                        {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('myOrder',{orderCode:item.order_code.toString()})}> */}
+                                        <TouchableOpacity onPress={() => this.showOrder(item.order_code.toString(),item.status,item.payment)}>
                                             <View style={{padding:10}}>
                                                 <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
                                             </View>
