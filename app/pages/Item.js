@@ -55,7 +55,9 @@ export default class App extends Component {
             cart: [],
             comment:[],
             refreshing: false,
-            youComment: ''
+            youComment: '',
+            chckCart: [],
+            cartID: 0
         }
     }
 
@@ -87,9 +89,19 @@ export default class App extends Component {
         this.setState({res:response});
     }
 
+    checkCart = async() => {
+        const user_id = AsyncStorage.getItem('user_id');
+        const {navigation} = this.props;
+        const itemId = navigation.getParam('id','N/A');
+        const response = await fetch('http://192.168.43.35:8080/checkCart/'+user_id+'/'+itemId);
+        const cart = await response.json();
+        this.setState({chckCart:cart});
+    }
+
     componentDidMount(){
         this.fetchItem();
         this.fetchComment();
+        this.checkCart();
     }
 
     addingCart = async()=> {
@@ -98,6 +110,11 @@ export default class App extends Component {
         const itemId = JSON.stringify(id);
         const userId = await AsyncStorage.getItem('user_id');
         const qty = this.state.value;
+        let cartId = 0;
+        // this.state.chckCart.forEach((item) => {
+        //     this.setState({cartID:item.item_id});
+        // });
+        // alert(this.state.cartID);
         var url = 'http://192.168.43.35:8080/insertCart';
         axios.post(url,{
             userId: userId,

@@ -6,6 +6,7 @@ import {Platform,
         Image, 
         StatusBar, 
         TextInput, 
+        Modal
     } from 'react-native';
 import Icon from 'react-native-vector-icons';
 import Logo from '../component/logo';
@@ -20,7 +21,9 @@ export default class Login extends Component {
         this.state = {
             username: '',
             password: '',
-            user: []
+            user: [],
+            showModal: false,
+            question: []
         };
     }
 
@@ -33,8 +36,15 @@ export default class Login extends Component {
         this.setState({user:accnt});
     }
 
+    fetchQuiz = async() => {
+        const response = await fetch('http://192.168.43.35:8080/getQuiz');
+        const quiz = await response.json();
+        this.setState({question:quiz});
+    }
+
     componentDidMount(){
         this.fetchUser();
+        this.fetchQuiz();
     }
 
     userLogin = async() => {
@@ -106,6 +116,23 @@ export default class Login extends Component {
             <View style={styles.signUpText}>
                 <Text style={styles.textSignUp}>Don't have an account yet? </Text>
                 <Text styel={styles.signUpButton} onPress={() => this.props.navigation.navigate('Register')}>Sign-up</Text>
+            </View>
+            <View>
+                <Modal 
+                    visible={this.state.showModal}
+                    onRequestClose={() => this.setState({ showModal: false })}
+                >
+                    {
+                        this.state.question.map((item,i) => {
+                            return(
+                                <View style={{flex: 1, backgroundColor: '#ccc'}}>
+                                    <Text>Question:</Text>
+                                    <Text></Text>
+                                </View>           
+                            );
+                        })
+                    }
+                </Modal>
             </View>
           </View>
         );

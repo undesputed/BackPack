@@ -522,3 +522,25 @@ app.get('/getDateByOrder/:order_code', function(req,res){
         }
     })
 });
+
+app.get('/checkCart/:user_id/:item_id', function(req,res){
+    var sql = 'select * from cart where user_id = ? and item_id = ? ';
+    con.query(sql,[req.params.user_id,req.params.item_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/getQuiz', function(req,res){
+    var sql = 'select * from quiz order by rand() limit 1'
+    con.query(sql,function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});

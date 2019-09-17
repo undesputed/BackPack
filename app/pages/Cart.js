@@ -12,7 +12,7 @@ import {Platform,
         TouchableOpacity,
         RefreshControl,
         Dimensions,
-        CheckBox
+        CheckBox,
     } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';

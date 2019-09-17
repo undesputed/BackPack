@@ -76,7 +76,7 @@ export default class MyOrder extends Component {
               console.log(error);
           });
           var sql2 = 'http://192.168.43.35:8080/cancelDelivery/'+status+'/'+orderCode;
-          axios.post(sql2).then(function(response){
+          axios.get(sql2).then(function(response){
             console.log(response);
           }).then(function(error){
             console.log(error);
