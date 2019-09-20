@@ -401,6 +401,41 @@ app.post('/insertComment', function(req,res){
     })
 });
 
+app.post('/setHistory', function(req,res){
+    console.log(req.body);
+    var data = {order_code:req.body.order_code,hist_date:req.body.hist_date,user_id:req.body.user_id};
+    var sql = 'insert into history set ?';
+    con.query(sql,[data],function(error, rows, fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+app.get('/updatePoints/:user_id', function(req,res){
+    var sql = 'update points set points = points + 1 where user_id = ?';
+    con.query(sql,[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.get('/updateQuiz/:date/:user_id', function(req,res){
+    var sql = 'update quiz set date = ? where user_id = ? ';
+    con.query(sql,[req.params.date,req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
 app.post('/delCart/:user_id/:item_id',function(req,res){
     console.log(req.body);
     var sql = 'delete from cart where user_id = ? and item_id = ?';
@@ -502,7 +537,7 @@ app.get('/delHistory/:order_code', function(req,res){
 });
 
 app.get('/getHistory/:user_id', function(req,res){
-    var sql = 'select history.order_code, history.hist_date,history.user_id, history.item_id,delivery.delivery_date,delivery.notif_status,delivery.delivery_status from history,delivery,item_setup where history.order_code = delivery.order_code and delivery.delivery_status in ("Cancelled","Delivered") and item_setup.item_id = history.item_id and item_setup.item_id = delivery.item_id and history.user_id = ?';
+    var sql = 'select * from delivery, history where history.`order_code` = delivery.`order_code` and delivery.`user_id` = ?';
     con.query(sql,[req.params.user_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
@@ -511,6 +546,18 @@ app.get('/getHistory/:user_id', function(req,res){
         }
     });
 })
+
+app.get('/getSomething/:user_id', function(req,res){
+    var sql = 'SELECT * FROM delivery WHERE delivery_status IN ("CANCELLED","DELIVERED") AND user_id = ?';
+    con.query(sql,[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+})
+
 
 app.get('/getDateByOrder/:order_code', function(req,res){
     var sql = 'select delivery_date from delivery where order_code = ?';
@@ -537,6 +584,50 @@ app.get('/checkCart/:user_id/:item_id', function(req,res){
 app.get('/getQuiz', function(req,res){
     var sql = 'select * from quiz order by rand() limit 1'
     con.query(sql,function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.get('/getDate/:user_id', function(req,res){
+    var sql = 'select date from quiz where user_id = ?';
+    con.query(sql,[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.get('/confirmQuiz/:user_id/:date', function(req,res){
+    var sql = 'select id from quiz where user_id = ? and date = ?';
+    con.query(sql,[req.params.user_id,req.params.date],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.post('/deliveredOrders/:order_code/:user_id', function(req,res){
+    var sql = 'update orders set status = "DELIVERED" where order_code = ? and user_id = ?';
+    con.query(sql,[req.params.order_code,req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.post('/deliveredDelivery/:order_code/:user_id', function(req,res){
+    var sql = 'update delivery set delivery_status = "DELIVERED" where order_code = ? and user_id = ?';
+    con.query(sql,[req.params.order_code,req.params.user_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);

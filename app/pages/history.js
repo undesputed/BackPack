@@ -12,7 +12,8 @@ import {
     Dimensions,
     WebView,
     Modal,
-    RefreshControl
+    RefreshControl,
+    FlatList
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Swipeout from 'react-native-swipeout';
@@ -60,53 +61,57 @@ export default class History extends Component{
     }
 
     _onRefresh(){
-        this.setState({refreshing: true});
+        this.setState({refreshing: true})
         this.fetchHistory().then(() => {
-            this.setState({refreshing: false});
+            this.setState({refreshing: false})
         })
+    }
+
+    ItemSepartor = () =>{
+        return (
+            <View
+                style={{height: 3,
+                width: "100%",
+            backgroundColor: "#ccc"}}
+            />
+        );
     }
 
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView
-                    RefreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
+                <View style={{height: 2, width:Window.width}}/>
+                    <View style={styles.contentContainer}>
+                        <FlatList
+                            data = {this.state.histItem}
+                            ItemSeparatorComponent={this.ItemSepartor}
+                            keyExtractor={(item,index) => index.toString()}
+                            renderItem={({item}) =>
+                            <View style={styles.content}>
+                                <Swipeout right={[
+                                            {
+                                            text: 'Delete',
+                                            backgroundColor: '#ccc',    
+                                            underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
+                                            onPress: () => this.deleteHitory(item.order_code)
+                                            }
+                                        ]}
+                                        autoClose={true}
+                                        backgroundColor= 'transparent'>
+                                    <View style={{padding:10}}>
+                                        <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
+                                    </View>
+                                    <View style={{paddingTop:10, flex:1}}>
+                                        <Text style={{position: 'absolute', right: 20, bottom: 10}}>{item.delivery_status}</Text>
+                                    </View>
+                                </Swipeout>
+                            </View>
+                            }
+                            refreshing = {this.state.refreshing}
                             onRefresh={this._onRefresh}
                         />
-                    }
-                >
-                    <View style={{height: 2, width:Window.width}}/>
-                    <View style={styles.contentContainer}>
-                        {
-                            this.state.histItem.map((item,i) => {
-                                return(
-                                    <View style={styles.content}>
-                                        <Swipeout right={[
-                                                    {
-                                                    text: 'Delete',
-                                                    backgroundColor: '#ccc',    
-                                                    underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
-                                                    onPress: () => this.deleteHitory(item.order_code)
-                                                    }
-                                                ]}
-                                                autoClose={true}
-                                                backgroundColor= 'transparent'>
-                                            <View style={{padding:10}}>
-                                                <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
-                                            </View>
-                                            <View style={{paddingTop:10, flex:1}}>
-                                                <Text style={{position: 'absolute', right: 20, bottom: 10}}>{item.delivery_status}</Text>
-                                            </View>
-                                        </Swipeout>
-                                    </View>
-                                );
-                            })
-                        }
                     </View>
                     <View style={{height: 2, width:Window.width}}/>
-                </ScrollView>
             </View>
         );
     }

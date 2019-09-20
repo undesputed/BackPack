@@ -32,7 +32,8 @@ export default class MyOrder extends Component {
               items: [],
               refreshing: false,
               user: [],
-              date: []
+              date: [],
+              setDate: ''
           }
       }
 
@@ -85,6 +86,39 @@ export default class MyOrder extends Component {
           this.props.navigation.goBack();
       }
 
+      delivered = async() =>{
+        const user_id = await AsyncStorage.getItem('user_id');
+        const {navigation} = this.props;
+        const orderCode = navigation.getParam('orderCode','N/A');
+        var day = new Date().getDate();
+        var month = new Date().getMonth()+1;
+        var year = new Date().getFullYear();
+        var date = year+'-'+month+'-'+day;
+        var updateOrder = 'http://192.168.43.35:8080/deliveredOrders/'+orderCode+'/'+user_id;
+        axios.post(updateOrder).then(function(response){
+            console.log(response);
+        }).then(function(error){
+            console.log(error);
+        })
+        var updateDelivery = 'http://192.168.43.35:8080/deliveredDelivery/'+orderCode+'/'+user_id;
+        axios.post(updateDelivery).then(function(response){
+            console.log(response);
+        }).then(function(error){
+            console.log(error);
+        });
+        var setHistory = 'http://192.168.43.35:8080/setHistory';
+        axios.post(setHistory,{
+            order_code: orderCode,
+            hist_date: date,
+            user_id: user_id
+        }).then(function(response){
+            console.log(response);
+        }).then(function(error){
+            console.log(error);
+        })
+        this.props.navigation.goBack();
+      }
+
       renderButton(){
         const {navigation} = this.props;
         const status = navigation.getParam('status', 'N/A');
@@ -93,17 +127,11 @@ export default class MyOrder extends Component {
         var month = new Date().getMonth()+1;
         var year = new Date().getFullYear();
         var date = year+'-'+month+'-'+day;
-        // this.state.date.forEach((item) => {
             if(status == 'ON THE WAY'){
-                // if(date >= item.delivery_date){
-                //     return <TouchableOpacity><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
-                //             <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>DELIVERED</Text>
-                //         </View></TouchableOpacity>
-                // }else{
-                    return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
-                            <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>ON THE WAY</Text>
-                        </View>
-                // }
+                // this.onTheWay();
+                return <TouchableOpacity onPress={this.delivered}><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+                        <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>DELIVERED</Text>
+                    </View></TouchableOpacity>
             }else if(status == 'PENDING'){
                 return <TouchableOpacity onPress={this.cancelOrder}><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'skyblue',alignSelf:'center',borderRadius: 5}}>
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Cancel Order</Text>
@@ -113,7 +141,27 @@ export default class MyOrder extends Component {
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>CANCELLED</Text>
                     </View>
             }
-        // });
+    }
+
+    onTheWay(){
+        var day = new Date().getDate();
+        var month = new Date().getMonth()+1;
+        var year = new Date().getFullYear();
+        var date = year+'-'+month+'-'+day;
+        this.state.date.forEach((item) => {
+            this.setState({setDate:item.delivery_date});
+        })        
+        if(date == this.state.setDate){
+            alert('Hello World');
+            // return <TouchableOpacity><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'orange',alignSelf:'center',borderRadius: 5}}>
+            //         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>DELIVERED</Text>
+            //     </View></TouchableOpacity>
+        }else{
+            alert('world');
+            // return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+            //         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>ON THE WAY</Text>
+            //     </View>
+        }
     }
 
       _onRefresh = () =>{

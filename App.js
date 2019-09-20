@@ -9,6 +9,9 @@ import Home from './app/pages/Home';
 import Category from './app/pages/category';
 
 export default class App extends Component {
+  static navigationOptions = {
+    header: null
+  }
   render() {
     return (
       <AppContainer />
