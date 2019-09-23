@@ -227,7 +227,7 @@ app.get('/byCategory/:id', function(req,res){
 });
 
 app.get('/getUser/:id', function(req,res){
-    con.query('select * from user inner join user_details on user.user_username = user_details.user_username where user.user_id = ? and user_details.user_status = "ACTIVE"',[req.params.id],function(error,rows,fields){
+    con.query('select * from user inner join user_details on user.user_id = user_details.user_id where user.user_id = ? and user_details.user_status = "ACTIVE"',[req.params.id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -237,7 +237,7 @@ app.get('/getUser/:id', function(req,res){
 });
 
 app.get('/getUserDetails/:id', function(req,res){
-    con.query('select * from user inner join user_details on user.user_username = user_details.user_username where user.user_id = ?',[req.params.id],function(error,rows,fields){
+    con.query('select * from user inner join user_details on user.user_id = user_details.user_id where user.user_id = ?',[req.params.id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -426,7 +426,7 @@ app.get('/updatePoints/:user_id', function(req,res){
 });
 
 app.get('/updateQuiz/:date/:user_id', function(req,res){
-    var sql = 'update quiz set date = ? where user_id = ? ';
+    var sql = 'update user set takenQuiz = ? where user_id = ? ';
     con.query(sql,[req.params.date,req.params.user_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
@@ -476,6 +476,30 @@ app.post('/updateDetailsById/:id', function(req,res){
     console.log(req.body);
     var sql = "update user_details set user_status = 'ACTIVE' where details_id = ?";
     con.query(sql,[req.params.id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+app.post('/addQty/:cart_id', function(req,res){
+    console.log(req.body);
+    var sql = 'update cart set quantity = quantity + 1 where cart_id = ?';
+    con.query(sql,[req.params.cart_id], function(error,rows,fields){
+        if(error) console.log(rows);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
+app.post('/minusQty/:cart_id', function(req,res){
+    console.log(req.body);
+    var sql = 'update cart set quantity = quantity - 1 where cart_id = ?';
+    con.query(sql,[req.params.cart_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -604,7 +628,7 @@ app.get('/getDate/:user_id', function(req,res){
 });
 
 app.get('/confirmQuiz/:user_id/:date', function(req,res){
-    var sql = 'select id from quiz where user_id = ? and date = ?';
+    var sql = 'select * from user where user_id = ? and takenQuiz = ?';
     con.query(sql,[req.params.user_id,req.params.date],function(error,rows,fields){
         if(error) console.log(error);
         else{
@@ -633,5 +657,47 @@ app.post('/deliveredDelivery/:order_code/:user_id', function(req,res){
             console.log(rows);
             res.send(rows);
         }
+    })
+});
+
+app.get('/getPoints/:user_id', function(req,res){
+    var sql = 'select * from points where user_id = ? ';
+    con.query(sql,[req.params.user_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.post('/updateCart/:quantity/:user_id/:item_id',function(req,res){
+    var sql ='update cart set quantity = ? where user_id = ? and item_id = ?';
+    con.query(sql,[req.params.quantity,req.params.user_id,req.params.item_id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
+});
+
+app.post('/insertUserDetails', function(req,res){
+    var data = {user_fname:req.body.fname,user_lname:req.body.lname,user_address:req.body.addr,user_postal_code:req.body.postal_code,user_email:req.body.email,user_phone:req.body.phone,user_id:req.body.user_id};
+    var sql = 'insert into user_details set ?';
+    con.query(sql,data,(err,result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            status: 'Comment inserted',
+            no: null,
+            user_fname:req.body.fname,
+            user_lname:req.body.lname,
+            user_address:req.body.addr,
+            user_postal_code:req.body.postal_code,
+            user_email:req.body.email,
+            user_phone:req.body.phone,
+            user_id: req.body.user_id
+        })
     })
 });

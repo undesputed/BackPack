@@ -7,15 +7,21 @@ import {
     TouchableOpacity,
     ScrollView,
     Dimension,
-    StatusBar
+    StatusBar,
+    Modal,
+    TextInput,
+    RefreshControl
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
 import Logo from '../component/logo';
 import axios from 'axios';
+import addAddress from './addAddress';
+import { NavigationActions, StackActions } from 'react-navigation';
 
 
-export default class Address extends Component{
+export class Address extends Component{
     static navigationOptions = {
         header: null
     }
@@ -24,7 +30,15 @@ export default class Address extends Component{
         super(props);
         this.state= {
             user: [],
-            detail_id: ''
+            detail_id: '',
+            showModal: false,
+            fname: '',
+            lname: '',
+            addr: '',
+            postal_code: '',
+            email: '',
+            phone: '',
+            refreshing: false
         }
     }
 
@@ -56,11 +70,30 @@ export default class Address extends Component{
         this.props.navigation.goBack();
     }
 
+    addDetails(){
+        this.setState({showModal:false});
+    }
+
+    _onRefresh = () =>{
+        this.setState({refreshing:true});
+        this.fetchUser().then(() => {
+            this.setState({refreshing:false})
+        })
+    }
+
     render(){
         return(
             <View style={styles.container}>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                >
                 <View style={styles.subContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('addAddress')}>
                         <Text style={{color: 'skyblue'}}><Icon name="add" size={25}/> Add Address</Text>
                     </TouchableOpacity>
                 </View>
@@ -69,7 +102,6 @@ export default class Address extends Component{
                     this.state.user.map((item,i) =>{
                         return(                 
                             <View>
-                                <ScrollView>
                                 <View style={{height: 5, backgroundColor: '#ccc', width: '100%'}}/>                                
                                     <TouchableOpacity onPress={() => this.updateAddress(item.details_id)}>
                                         <View style={styles.contentContainer}>
@@ -86,11 +118,11 @@ export default class Address extends Component{
                                             </View>
                                         </View>  
                                     </TouchableOpacity>
-                                </ScrollView>
                             </View>
                         );
                     })
                 }
+                </ScrollView>
             </View>
         );
     }
@@ -116,5 +148,31 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         alignSelf: 'center',
         borderRadius: 5,
-    }
+    },
+    inputBox: {
+        width: 300,
+        backgroundColor: 'rgba(255,255,255,0.3)',
+        borderRadius: 25,
+        paddingHorizontal: 16,
+        fontSize: 16,
+        color: '#ffffff',
+        marginVertical: 10
+    },
 });
+
+
+export default class App extends Component{
+    render(){
+        return(
+            <AppContainer/>
+        );
+    }
+  }
+  
+  const AppStackContainer = createStackNavigator({
+      Address: Address,
+      addAddress: addAddress
+    }
+  );
+  
+  const AppContainer = createAppContainer(AppStackContainer);

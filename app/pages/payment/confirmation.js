@@ -9,7 +9,7 @@ import {Platform,
         Dimensions,
         ScrollView,
         RefreshControl,
-        TouchableOpacity
+        TouchableOpacity,
     } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { FlatList, TouchableHighlight } from 'react-native-gesture-handler';
@@ -68,6 +68,12 @@ export default class Confirmation extends Component {
         this.fetchData().then(()=>{
             this.setState({refreshing: false})
         });
+        this.fetchUser().then(() =>{
+            this.setState({refreshing:false});
+        });
+        this.fetchLastCode().then(() => {
+            this.setState({refreshing:false});
+        })
     }
     ItemSepartor = () =>{
         return (
@@ -162,7 +168,14 @@ export default class Confirmation extends Component {
         const payment = navigation.getParam('payment','N/A');
         return (
           <View style={styles.container}>
-              <ScrollView>
+              <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this._onRefresh}
+                    />
+                }
+              >
                 <View style={{flex: 1, height: 125, width: Window.width, flexDirection: 'row'}}>
                     <View style={{padding: 10}}>
                         <Icon name="location-on" color='skyblue' size={25}/>

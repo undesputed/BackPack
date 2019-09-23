@@ -123,6 +123,7 @@ export default class MyOrder extends Component {
         const {navigation} = this.props;
         const status = navigation.getParam('status', 'N/A');
         const orderCode = navigation.getParam('orderCode','N/A');
+        const payment = navigation.getParam('payment','N/A');
         var day = new Date().getDate();
         var month = new Date().getMonth()+1;
         var year = new Date().getFullYear();
@@ -132,13 +133,17 @@ export default class MyOrder extends Component {
                 return <TouchableOpacity onPress={this.delivered}><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>DELIVERED</Text>
                     </View></TouchableOpacity>
-            }else if(status == 'PENDING'){
+            }else if(status == 'PENDING' || payment == 'COD'){
                 return <TouchableOpacity onPress={this.cancelOrder}><View style={{height: 40,width:Window.Width - 10, backgroundColor: 'skyblue',alignSelf:'center',borderRadius: 5}}>
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Cancel Order</Text>
                     </View></TouchableOpacity>
             }else if(status == 'CANCELLED'){
                 return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>CANCELLED</Text>
+                    </View>
+            }else if(status == 'PENDING' || payment == 'Paypal'){
+                return <View style={{height: 40,width:Window.Width - 10, backgroundColor: 'pink',alignSelf:'center',borderRadius: 5}}>
+                        <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Cannot Cancel</Text>
                     </View>
             }
     }

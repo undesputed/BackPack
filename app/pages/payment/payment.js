@@ -89,6 +89,12 @@ export default class Payment extends Component {
                     </View>
               </ScrollView>
               <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
+                <View style={{backgroundColor: '#69B1B3', flex: 1}}>
+                        <View style={{widht: 350,flexDirection: 'row'}}>
+                            <Text style={{paddingTop: 14, paddingLeft: 14, paddingBottom: 14, paddingRight: 5}}>Amount:</Text>
+                            <Text style={{fontWeight: 'bold', paddingTop: 14, paddingBottom: 14}}>₱{totalPrice}</Text>
+                        </View>
+                    </View>
                 <View style={{backgroundColor: 'pink', flex: 1}}>
                     <View style={{widht: 350,flexDirection: 'row'}}>
                         <Text style={{paddingTop: 14, paddingLeft: 14, paddingBottom: 14, paddingRight: 5}}>Status:</Text>

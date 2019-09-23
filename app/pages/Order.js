@@ -50,6 +50,17 @@ export class Order extends Component {
         this.setState({getItems:item});
     }
 
+    ItemSepartor = () =>{
+        return (
+            <View
+                style={{height: 5,
+                width: "100%",
+            backgroundColor: "#ccc"}}
+            />
+        );
+    }
+
+
     componentDidMount(){
         this.fetchOrderCode();
         this.fetchItems();
@@ -76,20 +87,40 @@ export class Order extends Component {
                     <View style={styles.topNav}>
                         <Text style={{fontSize: 20, fontWeight: '700', padding: 10}}>Orders</Text>
                     </View>
-                    <ScrollView refreshControl={
+                    <View style={{height: 10, width:Window.width}}/>
+                    <FlatList
+                        data = {this.state.ordersCode}
+                        ItemSeparatorComponent={this.ItemSepartor}
+                        keyExtractor={(item,index) => index.toString()}
+                        renderItem={({item}) => 
+                            <View style={{flex: 1,}}>   
+                                <View style={styles.cardContainer}>
+                                    <TouchableOpacity onPress={() => this.showOrder(item.order_code.toString(),item.status,item.payment)}>
+                                        <View style={{padding:10}}>
+                                            <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
+                                        </View>
+                                        <View style={{paddingTop:10, flex:1}}>
+                                            <Text style={{position: 'absolute', right: 20, bottom: 10}}>{item.status}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        }
+                    />
+                    {/* <ScrollView refreshControl={
                         <RefreshControl
                         refreshing={this.state.refreshing}
                         onRefresh={this._onRefresh}
                       />
                     }>
                     <View style={{height: 10, width:Window.width}}/>
-                        <View style={{flex: 1,}}>
-                        {
+                        <View style={{flex: 1,}}> */}
+                        {/* {
                             this.state.ordersCode.map((item,i) => {
-                                return(
-                                    <View style={styles.cardContainer}>
+                                return( */}
+                                    {/* <View style={styles.cardContainer}> */}
                                         {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('myOrder',{orderCode:item.order_code.toString()})}> */}
-                                        <TouchableOpacity onPress={() => this.showOrder(item.order_code.toString(),item.status,item.payment)}>
+                                        {/* <TouchableOpacity onPress={() => this.showOrder(item.order_code.toString(),item.status,item.payment)}>
                                             <View style={{padding:10}}>
                                                 <Text style={{fontSize:20,fontWeight:'bold'}}>{item.order_code}</Text>
                                             </View>
@@ -97,13 +128,13 @@ export class Order extends Component {
                                                 <Text style={{position: 'absolute', right: 20, bottom: 10}}>{item.status}</Text>
                                             </View>
                                         </TouchableOpacity>
-                                    </View>
-                                );
+                                    </View> */}
+                                {/* );
                             })
-                        }
-                    </View>
+                        } */}
+                    {/* </View>
                     <View style={{height: 10, width:Window.width}}/>
-                    </ScrollView>
+                    </ScrollView> */}
             </View>
         );
     }

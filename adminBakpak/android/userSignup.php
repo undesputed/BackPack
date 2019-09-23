@@ -24,10 +24,14 @@ if(isset($check)){
 	echo $EmailExistJson; 
  }
 else{
+	$getUserId = "SELECT user_id from user order by user_id desc limit 1";
+	$get = mysqli_fetch_array(mysqli_query($con,$getUserId));
+	$user_id = $get['user_id']+1;
 	$Sql_Query = "insert into user (user_username,user_password) values ('$username','$password')";
-	$Sql_Details = "insert into user_details(user_username,user_password) values('$username','$password')";
+	$Sql_Points = "insert into points (points,user_id) values(1,'$user_id')";
+	// $Sql_Details = "insert into user_details(user_username,user_password,user_id) values('$username','$password','$user_id')";
  
- 	if(mysqli_query($con,$Sql_Details)){
+ 	if(mysqli_query($con,$Sql_Points)){
 		if(mysqli_query($con,$Sql_Query)){
 			$MSG = 'User Registered Successfully' ;
 			$json = json_encode($MSG);

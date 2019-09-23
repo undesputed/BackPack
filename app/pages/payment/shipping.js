@@ -23,12 +23,16 @@ const Window = {
 
 export default class Shipping extends Component {
 
+    _isMounted = false;
+
     constructor(props){
         super(props);
         this.state={
             items: [],
             refreshing: false,
-            total: ''
+            total: '',
+            points: [],
+            price: ''
         }
     }
 
@@ -39,8 +43,21 @@ export default class Shipping extends Component {
         this.setState({items:cart});
     }
 
+    fetchPoints = async() => {
+        const id = await AsynStorage.getItem('user_id');
+        const response = await fetch('http://192.168.43.35:8080/getPoints/'+id);
+        const getPoints = await response.json();
+        this.setState({points:getPoints});
+    }
+
     componentDidMount(){
+        this._isMounted = true;
         this.fetchData();
+        this.fetchPoints();
+    }
+
+    componentWillUnmount(){
+        this._isMounted=false;
     }
 
     _onRefresh = () =>{
@@ -48,6 +65,13 @@ export default class Shipping extends Component {
         this.fetchData().then(()=>{
             this.setState({refreshing: false})
         });
+        this.fetchPoints().then(() => {
+            this.setState({refreshing:false})
+        });
+    }
+
+    userPoint(totalPrice,totalDiscount){
+        
     }
 
     ItemSepartor = () =>{
@@ -61,12 +85,27 @@ export default class Shipping extends Component {
     }
     render() {
         let totalPrice = 0;
+        let totalPoints = 0;
+        let discountedPrice = 0.00;
+        let totalDiscount = 0.00;
+        this.state.points.forEach((item) => {
+            totalPoints += item.points;
+        });
+        totalDiscount = totalPoints / 7;
         this.state.items.forEach((item) => {
             totalPrice += item.quantity * item.unit_price;
+            discountedPrice += totalPrice - totalDiscount; 
         });
         return (
             <View style={styles.container}>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                >
                     <View style={{height: 10, width:Window.width}}></View>
                     <View style={styles.titleContainer}>
                         <Text style={styles.yourProd}>Your Product</Text>
@@ -105,6 +144,10 @@ export default class Shipping extends Component {
                 <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
                     <View style={styles.totalContainer}>
                         <Text>Total Cost: ₱{totalPrice}</Text>
+                    </View>
+                    <View style={styles.totalContainer}>
+                        <Text>Total Points: {totalPoints}                                   7 Points = ₱1</Text>
+                        <Button onPress={() => this.props.navigation.navigate('Payment',{totalPrice: totalPrice-totalDiscount})} style={{position: 'absolute', right: '0'}} title='Use Points'/>
                     </View>
                     <View style={{height: 10, width:Window.width}}></View>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('Payment',{totalPrice: totalPrice})}>

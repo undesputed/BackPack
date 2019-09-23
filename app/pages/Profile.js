@@ -24,6 +24,8 @@ const Window = {
 
 export class Profile extends Component {
 
+  _isMounted = false;
+
   static navigationOptions = {
     header: null
 }
@@ -44,7 +46,12 @@ export class Profile extends Component {
   }
 
   componentDidMount(){
+    this._isMounted = true;
     this.fetchUser();
+  }
+
+  componentWillUnmount(){
+    this._isMounted= false;
   }
 
   updateAddress = async() => {
@@ -61,9 +68,6 @@ export class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {
-          this.state.data.map((item,i) => {
-            return(
               <ScrollView showsVerticalScrollIndicator={false}
                 refreshControl={
                   <RefreshControl
@@ -77,11 +81,22 @@ export class Profile extends Component {
                 <Image style={styles.avatar} source={require('../images/user_avatar.png')}/>
                 <View style={styles.body}>
                   <View style={styles.bodyContent}>
-                    <Text style={styles.name}>{item.user_fname} {item.user_lname}</Text>
-                    <TouchableOpacity onPress={this.updateAddress}>
-                      <Text style={styles.info}>{item.user_phone}/{item.user_email}</Text>
-                      <Text style={styles.description}>{item.user_address} {item.user_postal_code}</Text>
-                    </TouchableOpacity>
+                  {
+                    this.state.data.map((item,i) => {
+                      return(
+                        <View>
+                          <Text style={styles.name}>{item.user_fname} {item.user_lname}</Text>
+                          <TouchableOpacity onPress={this.updateAddress}>
+                            <Text style={styles.info}>{item.user_phone}/{item.user_email}</Text>
+                            <Text style={styles.description}>{item.user_address} {item.user_postal_code}</Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    })
+                  }
+                  <TouchableOpacity onPress={this.updateAddress}>
+                    <Text style={{fontSize: 15,alignSelf: 'center'}}>Add Address ++</Text>
+                  </TouchableOpacity>
                     <View style={styles.detailBody}>
                       <View style={styles.item}>
                         <TouchableOpacity style={styles.infoContent}>
@@ -111,9 +126,6 @@ export class Profile extends Component {
                 </View>
               </View>
               </ScrollView>
-            );
-          })
-        }
       </View>
     );
   }
@@ -151,7 +163,8 @@ const styles = StyleSheet.create({
   name:{
     fontSize:28,
     color: "#696969",
-    fontWeight: "600"
+    fontWeight: "600",
+    alignSelf: 'center'
   },
   info:{
     fontSize:16,

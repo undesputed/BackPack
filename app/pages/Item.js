@@ -182,9 +182,10 @@ export default class App extends Component {
                                 <Text style={styles.prodCat}>{item.sub_category_name}</Text>
                                 <Text style={styles.prodName}>{item.item_name}</Text>
                                 <Text style={styles.prodPrice}>₱{item.unit_price}</Text>
+                                <Text style={styles.prodPrice}>Stock: {item.item_quantity}</Text>
                                 <View style={styles.descContainer}>
                                     <Text style={styles.desc}>Description:</Text>
-                                    <NumericInput
+                                    {/* <NumericInput
                                         style={{alignItems: 'baseline'}} 
                                         value={this.state.value} 
                                         onChange={value => this.setState({value})} 
@@ -198,7 +199,7 @@ export default class App extends Component {
                                         textColor='#B0228C' 
                                         iconStyle={{ color: 'white' }} 
                                         rightButtonBackgroundColor='#111a0b'
-                                        leftButtonBackgroundColor='#111a0b'/>
+                                        leftButtonBackgroundColor='#111a0b'/> */}
                                 </View>
                                 <ScrollView>
                                     <Text style={styles.descContent}>{item.item_description}</Text>
