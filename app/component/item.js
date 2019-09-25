@@ -17,7 +17,7 @@ export default class Item extends Component {
 
     render() {
         return(
-            <View style={{height: 150, borderRadius: 5,elevation: 3, width: 130, marginLeft:20, borderWidth:0.5, borderColor: '#455a64'}}>
+            <View style={{height: 150,backgroundColor:'white', borderRadius: 5,elevation: 3, width: 130, marginLeft:20, borderWidth:0.5, borderColor: '#455a64'}}>
                 <View style={{flex: 2}}>
                     <Image source={this.props.imageUri} 
                         style={{flex: 1, width: null, height: 151, resizeMode: 'stretch'}}

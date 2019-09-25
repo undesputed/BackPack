@@ -108,8 +108,9 @@ export default class Login extends Component {
                 if(responseJson != 'Try Again'){
                     // alert(responseJson);
                     AsyncStorage.setItem('user_id',responseJson);
-                    this.fetchConfirm();
-                    this.checkUser();
+                    this.props.navigation.navigate('Home');
+                // this.fetchConfirm();
+                    // this.checkUser();
                 }else{
                     alert(responseJson);
                 }

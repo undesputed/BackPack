@@ -11,14 +11,17 @@ export default class Category extends Component {
 
     render() {
         return(
-            <View style={{height: 130,borderRadius: 5,elevation:3, width: 130, marginLeft:20, borderWidth:0.5, borderColor: '#455a64'}}>
-                <View style={{flex: 2}}>
+            <View style={{height: 130, backgroundColor: 'white',borderRadius: 5,elevation:10, width: 130, marginLeft:20, borderWidth:0.5, borderColor: '#455a64'
+            }}>
+                <View style={{flex: 2,shadowColor: 'black',
+                shadowOffset: {width: 5, height:5},
+                shadowRadius: 5}}>
                     <Image source={this.props.imageUri} 
-                        style={{flex: 1, width: null, height: null, resizeMode: 'cover'}}
+                        style={{flex: 1, width: 100, height: 100,alignSelf: 'center' ,resizeMode: 'cover'}}
                         
                     />
                 </View>
-                <View style={{flex:1,paddingLeft:35,paddingTop:10}}>
+                <View style={{flex:1,alignSelf:'center',paddingTop:10}}>
                     <Text>{this.props.name}</Text>
                 </View>
             </View>

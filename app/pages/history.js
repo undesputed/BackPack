@@ -25,6 +25,9 @@ const Window = {
 }
 
 export default class History extends Component{
+
+    _isMounted = false;
+
     static navigationOptions = {
         title: 'History'
     }
@@ -35,8 +38,16 @@ export default class History extends Component{
             histDel: [],
             histUser: [],
             histItem: [],
-            refreshing: false
+            refreshing: false,
+            orderCode: []
         }
+    }
+
+    fetchOrderCode = async() => {
+        const id = await AsyncStorage.getItem('user_id');
+        const response = await fetch('http://192.168.43.35:8080/getHistoryCode/'+id);
+        const histOrder = await response.json();
+        this.setState({orderCode:histOrder});
     }
 
     fetchHistory = async() => {
@@ -47,8 +58,15 @@ export default class History extends Component{
     }
 
     componentDidMount(){
+        this._isMounted = true;
         this.fetchHistory();
+        this.fetchOrderCode();
     }
+
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+
 
     deleteHitory(id){
         var url = 'http://192.168.43.35:8080/delHistory/'+id;
@@ -60,7 +78,7 @@ export default class History extends Component{
         alert('History Deleted');
     }
 
-    _onRefresh(){
+    _onRefresh = () => {
         this.setState({refreshing: true})
         this.fetchHistory().then(() => {
             this.setState({refreshing: false})
@@ -89,13 +107,13 @@ export default class History extends Component{
                             renderItem={({item}) =>
                             <View style={styles.content}>
                                 <Swipeout right={[
-                                            {
-                                            text: 'Delete',
-                                            backgroundColor: '#ccc',    
-                                            underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
-                                            onPress: () => this.deleteHitory(item.order_code)
-                                            }
-                                        ]}
+                                    {
+                                    text: 'Delete',
+                                    backgroundColor: '#ccc',    
+                                    underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
+                                    onPress: () => this.deleteHitory(item.order_code)
+                                    }
+                                ]}
                                         autoClose={true}
                                         backgroundColor= 'transparent'>
                                     <View style={{padding:10}}>

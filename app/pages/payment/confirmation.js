@@ -152,12 +152,12 @@ export default class Confirmation extends Component {
                 console.log(error);
             });
             //update item
-            var upItem = 'http://192.168.43.35:8080/updateItem/'+quantity+'/'+item_id;
-            axios.post(upItem).then(function(response){
-                console.log(response);
-            }).catch(function(error){
-                console.log(error); 
-            })
+            // var upItem = 'http://192.168.43.35:8080/updateItem/'+quantity+'/'+item_id;
+            // axios.post(upItem).then(function(response){
+            //     console.log(response);
+            // }).catch(function(error){
+            //     console.log(error); 
+            // })
         });
         alert('Order Placed');
         this.props.navigation.navigate('Shipping');
@@ -166,6 +166,7 @@ export default class Confirmation extends Component {
     render() {
         const {navigation} = this.props;
         const payment = navigation.getParam('payment','N/A');
+        const totalPrice = navigation.getParam('totalPrice','N/A');
         return (
           <View style={styles.container}>
               <ScrollView
@@ -245,6 +246,23 @@ export default class Confirmation extends Component {
                 </View>
                 <View style={{height:3,width: Window.width,backgroundColor:'#B0CBDF',paddingBottom: 3}}/>
                 <View style={{height:3,width: Window.width,backgroundColor:'white',paddingBottom: 3}}/>
+                <View style={{flex: 1}}>
+                    <View style={{flexDirection: 'row',flex:1, padding: 10}}>
+                        <Text>SubTotal:</Text><Text style={{paddingLeft:210}}>₱{totalPrice}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row',flex:1, padding: 10}}>
+                        <Text>VAT(12%):</Text><Text style={{paddingLeft:203}}>₱{totalPrice * 0.12}</Text>
+                    </View>
+                    <View
+                        style={{height:2,width:'100%',backgroundColor:'black'}}
+                    />
+                    <View
+                        style={{height:2,width:'100%',backgroundColor:'black'}}
+                    />
+                    <View style={{flexDirection: 'row',flex:1, padding: 10}}>
+                        <Text>Grand Total:</Text><Text style={{paddingLeft:190}}>₱{totalPrice + (totalPrice * 0.12)}</Text>
+                    </View>
+                </View>
                 <TouchableOpacity onPress={this.placeOrder}>
                     <View style={{height: 40,width:Window.width - 10, backgroundColor: 'skyblue',alignSelf:'center',borderRadius: 5}}>
                         <Text style={{alignSelf: 'center',padding:10,fontSize:18,fontWeight: 'bold'}}>Place Order</Text>

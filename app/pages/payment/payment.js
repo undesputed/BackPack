@@ -32,8 +32,10 @@ export default class Payment extends Component {
     }
 
     cod = () => {
+        const {navigation} = this.props;
+        const totalPrice = navigation.getParam('totalPrice','N/A');
         const type= 'COD';
-        this.props.navigation.navigate('Confirmation',{payment:type});
+        this.props.navigation.navigate('Confirmation',{payment:type,totalPrice: totalPrice});
     }
 
     handleResponse = data => {

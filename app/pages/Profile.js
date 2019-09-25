@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  RefreshControl
+  RefreshControl,
+  ImageBackground
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -61,12 +62,13 @@ export class Profile extends Component {
   _onRefresh =() =>{
     this.setState({refreshing: true});
     this.fetchUser().then(()=>{
-        this.setState({refreshing: false})
+      this.setState({refreshing: false})
     });
 }
 
   render() {
     return (
+                  <ImageBackground source={require('../images/bg.png')} style={{width: '100%', height: '100%'}}>
       <View style={styles.container}>
               <ScrollView showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -95,7 +97,7 @@ export class Profile extends Component {
                     })
                   }
                   <TouchableOpacity onPress={this.updateAddress}>
-                    <Text style={{fontSize: 15,alignSelf: 'center'}}>Add Address ++</Text>
+                    <Text style={{fontSize: 15,alignSelf: 'center', color: 'skyblue'}}>Add Address ++</Text>
                   </TouchableOpacity>
                     <View style={styles.detailBody}>
                       <View style={styles.item}>
@@ -103,13 +105,6 @@ export class Profile extends Component {
                             <Text style={styles.info}><Icon name="home" size={20} /> Home</Text>
                         </TouchableOpacity>
                       </View>
-
-                      <View style={styles.item}>
-                        <TouchableOpacity style={styles.infoContent} onPress={() => this.props.navigation.navigate('updateProf')}>
-                          <Text style={styles.info}><Icon name="update" size={20} /> Update Profile</Text>
-                        </TouchableOpacity>
-                      </View>
-
                       <View style={styles.item}>
                         <TouchableOpacity style={styles.infoContent} onPress={() => this.props.navigation.navigate('History')}>
                           <Text style={styles.info}><Icon name="description" size={20} /> History</Text>
@@ -127,15 +122,13 @@ export class Profile extends Component {
               </View>
               </ScrollView>
       </View>
+                </ImageBackground>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  header:{
-    backgroundColor: "#ccc",
-    height:200,
-  },
+  
   avatar: {
     width: 130,
     height: 130,
@@ -145,7 +138,7 @@ const styles = StyleSheet.create({
     marginBottom:10,
     alignSelf:'center',
     position: 'absolute',
-    marginTop:130
+    marginTop:50
   },
   name:{
     fontSize:22,
@@ -153,7 +146,7 @@ const styles = StyleSheet.create({
     fontWeight:'600',
   },
   body:{
-    marginTop:40,
+    marginTop:170,
   },
   bodyContent: {
     flex: 1,
@@ -162,18 +155,18 @@ const styles = StyleSheet.create({
   },
   name:{
     fontSize:28,
-    color: "#696969",
+    color: "white",
     fontWeight: "600",
     alignSelf: 'center'
   },
   info:{
     fontSize:16,
-    color: "#00BFFF",
+    color: "black",
     marginTop:10
   },
   description:{
     fontSize:16,
-    color: "#696969",
+    color: "white",
     marginTop:10,
     textAlign: 'center'
   },
@@ -193,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom:10,
     width:250,
-    backgroundColor: '#ccc',
+    backgroundColor: 'white',
     borderRadius: 5
   },
 });

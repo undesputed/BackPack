@@ -17,9 +17,12 @@ const cardContainerSize = {
     Height: resizeComponent(300, 5)
 }
 
-export default class Category extends Component {
+export default class NewArrival extends Component {
+
+    _isMounted = false;
+
     static navigationOptions = {
-        title: 'Categories'
+        title: 'New Arrivals'
     }
 
     ItemSepartor = () =>{
@@ -35,7 +38,8 @@ export default class Category extends Component {
     constructor(props){
         super(props);
         this.state = {
-            data: []
+            data: [],
+            Item: []
         }
     }
 
@@ -44,9 +48,24 @@ export default class Category extends Component {
         const category = await response.json();
         this.setState({data:category});
     }
+    fetchItem = async()=>{
+        var day = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear();
+        var date = year+ '-' + month + '-' + day;
+        const response = await fetch('http://192.168.43.35:8080/item/'+date);
+        const item = await response.json();
+        this.setState({Item:item})
+    }
 
     componentDidMount(){
+        this._isMounted = true;
         this.fetchCategory();
+        this.fetchItem();
+    }
+
+    componentWillUnmount(){
+        this._isMounted = false;
     }
 
     _onRefresh(){
@@ -61,7 +80,7 @@ export default class Category extends Component {
         return(
             // <View style={styles.container}>
                 <FlatList 
-                    data={this.state.data}
+                    data={this.state.Item}
                     ItemSeparatorComponent={this.ItemSepartor}
                     showsVerticalScrollIndicator={false}
                     renderItem={({item}) =>
@@ -70,7 +89,7 @@ export default class Category extends Component {
                                 <View style={styles.cardContainer}>
                                     <View style={styles.card}>
                                         <Image
-                                            source={{uri:item.image}}
+                                            source={{uri:item.item_image}}
                                             indicator={ProgressBar}
                                             indicatorProps={{
                                                 size: 80,
@@ -92,7 +111,7 @@ export default class Category extends Component {
                                             fontSize: 12,
                                             textAlign: 'center',
                                             margin: 10
-                                        }}>{item.sub_category_name}</Text>
+                                        }}>{item.item_name}</Text>
                                     </View>
                                 </View>
                             </View>

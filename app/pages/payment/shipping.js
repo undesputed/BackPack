@@ -132,23 +132,24 @@ export default class Shipping extends Component {
                                         <View style={{flex:1, paddingLeft: 20,}}>
                                             <Text style={{fontWeight: 'bold', fontSize: 20}}>{item.item_name}</Text>
                                             <Text>qty: {item.quantity}</Text>
-                                            <Text>₱{item.unit_price}</Text>
+                                            <Text>₱{item.unit_price}/{item.unit_measure}</Text>
+                                            <Text style={{position:'absolute',right: 0,bottom: 0,fontWeight: 'bold'}}>{item.unit_price} * {item.quantity} = ₱{item.unit_price*item.quantity}</Text>
                                         </View>
                                     </View>
                                 </View>
                             }
                         />
                     </View>
-                    <View style={{height: 115, width:Window.width}}></View>
+                    <View style={{height: 230, width:Window.width}}></View>
                 </ScrollView>
                 <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
                     <View style={styles.totalContainer}>
                         <Text>Total Cost: ₱{totalPrice}</Text>
                     </View>
-                    <View style={styles.totalContainer}>
+                    {/* <View style={styles.totalContainer}>
                         <Text>Total Points: {totalPoints}                                   7 Points = ₱1</Text>
                         <Button onPress={() => this.props.navigation.navigate('Payment',{totalPrice: totalPrice-totalDiscount})} style={{position: 'absolute', right: '0'}} title='Use Points'/>
-                    </View>
+                    </View> */}
                     <View style={{height: 10, width:Window.width}}></View>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('Payment',{totalPrice: totalPrice})}>
                         <View style={{flex:1,alignSelf:'center'}}>

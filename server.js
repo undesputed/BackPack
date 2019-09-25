@@ -155,6 +155,16 @@ app.get('/getOrderCode/:user_id', function(req,res){
     })
 });
 
+app.get('/getHistoryCode/:user_id', function(req,res){
+    con.query('select distinct(order_code), hist_date from history where user_id = ?',[req.params.user_id], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+})
+
 app.get('/getOrderItems/:user_id', function(req,res){
     con.query('select * from orders inner join item_setup on orders.item_id = item_setup.item_id where orders.status in ("Pending","On The Way") and orders.user_id = ?',[req.params.user_id], function(error,rows,fields){
         if(error) console.log(error);
@@ -700,4 +710,15 @@ app.post('/insertUserDetails', function(req,res){
             user_id: req.body.user_id
         })
     })
+});
+
+app.post('/getItemById/:item_id', function(req,res){
+    var sql = "SELECT * form item_setup where item_id = ? ";
+    con.query(sql,[req.params.item_id],function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });
 });

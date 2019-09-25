@@ -10,7 +10,8 @@ import {Platform,
     Dimensions, 
     FlatList, 
     RefreshControl,
-    TouchableOpacity
+    TouchableOpacity,
+    ImageBackground
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
@@ -54,8 +55,7 @@ export class Order extends Component {
         return (
             <View
                 style={{height: 5,
-                width: "100%",
-            backgroundColor: "#ccc"}}
+                width: "100%",}}
             />
         );
     }
@@ -83,11 +83,16 @@ export class Order extends Component {
 
     render() {
         return(
+            <ImageBackground source={require('../images/bg.png')} style={{width: '100%', height: '100%'}}>
             <View style={styles.container}>
                     <View style={styles.topNav}>
                         <Text style={{fontSize: 20, fontWeight: '700', padding: 10}}>Orders</Text>
                     </View>
                     <View style={{height: 10, width:Window.width}}/>
+                    <View style={{flex: 1,flexDirection: 'row', alignContent: 'center', alignItems: 'center', alignSelf: 'center'}}>
+                        <Text style={{color: 'white', position: 'absolute', right: 50, fontWeight: 'bold'}}>ORDER CODE</Text>
+                        <Text style={{color: 'white', position: 'absolute', left: 85, fontWeight: 'bold'}}>STATUS</Text>
+                    </View>
                     <FlatList
                         data = {this.state.ordersCode}
                         ItemSeparatorComponent={this.ItemSepartor}
@@ -106,6 +111,8 @@ export class Order extends Component {
                                 </View>
                             </View>
                         }
+                        refreshing={this.state.refreshing}
+                        onRefresh={this._onRefresh}
                     />
                     {/* <ScrollView refreshControl={
                         <RefreshControl
@@ -136,13 +143,13 @@ export class Order extends Component {
                     <View style={{height: 10, width:Window.width}}/>
                     </ScrollView> */}
             </View>
+            </ImageBackground>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#ccc',
         flex: 1,
     },
     topNav:{

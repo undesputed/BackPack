@@ -57,7 +57,8 @@ export default class App extends Component {
             refreshing: false,
             youComment: '',
             chckCart: [],
-            cartID: 0
+            cartID: 0,
+            qty: 1
         }
     }
 
@@ -109,28 +110,48 @@ export default class App extends Component {
         const id = navigation.getParam('id','N/A');
         const itemId = JSON.stringify(id);
         const userId = await AsyncStorage.getItem('user_id');
-        const qty = this.state.value;
+        const qty = this.state.qty;
         let cartId = 0;
-        // this.state.chckCart.forEach((item) => {
-        //     this.setState({cartID:item.item_id});
-        // });
-        // alert(this.state.cartID);
-        var url = 'http://192.168.43.35:8080/insertCart';
-        axios.post(url,{
-            userId: userId,
-            qty: qty,
-            itemId: itemId
-        }).then(function (response){
-            console.log(response);
-        }).catch(function (error){
-            console.log(error);
+        let quantity = 0;
+        this.state.data.forEach((item) => {
+            quantity += item.item_quantity - qty;
         });
-        alert('Added to Cart');
-        this.props.navigation.dispatch(StackActions.reset({
-            index: 0,
-            key: null,
-            actions: [NavigationActions.navigate({ routeName: 'HomePage' })]
-        }))
+        if(quantity >= 0 ){
+            var url = 'http://192.168.43.35:8080/insertCart';
+            axios.post(url,{
+                userId: userId,
+                qty: qty,
+                itemId: itemId
+            }).then(function (response){
+                console.log(response);
+            }).catch(function (error){
+                console.log(error);
+            });
+            alert('Added to Cart');
+            this.props.navigation.dispatch(StackActions.reset({
+                index: 0,
+                key: null,
+                actions: [NavigationActions.navigate({ routeName: 'HomePage' })]
+            }))    
+        }else{
+            alert('Exceeds Quatity On Hand');
+        }
+        // var url = 'http://192.168.43.35:8080/insertCart';
+        // axios.post(url,{
+        //     userId: userId,
+        //     qty: qty,
+        //     itemId: itemId
+        // }).then(function (response){
+        //     console.log(response);
+        // }).catch(function (error){
+        //     console.log(error);
+        // });
+        // alert('Added to Cart');
+        // this.props.navigation.dispatch(StackActions.reset({
+        //     index: 0,
+        //     key: null,
+        //     actions: [NavigationActions.navigate({ routeName: 'HomePage' })]
+        // }))
     }
 
     setComment = async() => {
@@ -183,6 +204,27 @@ export default class App extends Component {
                                 <Text style={styles.prodName}>{item.item_name}</Text>
                                 <Text style={styles.prodPrice}>₱{item.unit_price}</Text>
                                 <Text style={styles.prodPrice}>Stock: {item.item_quantity}</Text>
+                                <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                                    <Text style={{padding: 10,paddingTop:30, fontWeight: '700'}}>Qty:</Text>
+                                    <TextInput
+                                        style={{width: 60,
+                                            height: 60,
+                                            alignSelf: 'center',
+                                            backgroundColor: 'white',
+                                            borderRadius: 5,
+                                            paddingHorizontal: 16,
+                                            fontSize: 16,
+                                            color: '#ffffff',
+                                            marginVertical: 10
+                                        }}
+                                        placeholder= '1'
+                                        underlineColorAndroid='rgba(0,0,0,0)'
+                                        placeholderTextColor="black"
+                                        onChangeText = {qty => this.setState({qty})}
+                                        autoCapitalize = "none"
+                                        autoCorrect = {false}
+                                    />
+                                </View>
                                 <View style={styles.descContainer}>
                                     <Text style={styles.desc}>Description:</Text>
                                     {/* <NumericInput

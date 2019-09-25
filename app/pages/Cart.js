@@ -13,6 +13,8 @@ import {Platform,
         RefreshControl,
         Dimensions,
         CheckBox,
+        ImageBackground,
+        TextInput
     } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -54,7 +56,9 @@ export class Cart extends Component {
             checked: true,
             unchecked: false,
             activeRowKey: null,
-            quantity: 0
+            quantity: 0,
+            qty:0,
+            item: []
         };
     }
 
@@ -68,6 +72,13 @@ export class Cart extends Component {
         const response = await fetch('http://192.168.43.35:8080/userCart/'+id);
         const cart = await response.json();
         this.setState({data:cart});
+    }
+
+    fetchItem = async()=> {
+        const itemID = await AsyncStorage.getItem('item_id');
+        const response = await fetch('http://192.168.43.35:8080/byItem/'+itemID);
+        const getitem = await response.json();
+        this.setState({item:getitem});
     }
 
     componentDidMount(){
@@ -94,8 +105,7 @@ export class Cart extends Component {
         return (
             <View
                 style={{height: 10,
-                width: "100%",
-            backgroundColor: "#ccc"}}
+                width: "100%"}}
             />
         );
     }
@@ -131,39 +141,48 @@ export class Cart extends Component {
         this.props.navigation.push('Checkout');
     }
 
-    minus = (cart_id) => {
-        var sql = 'http:/192.168.43.35:8080/minusQty/'+cart_id;
-        axios.post(sql).then(function(response){
-            console.log(response);
-        }).then(function(error){
-            console.log(error);
-        })
-        this.setState({refreshing:true});
-        this.fetchCart().then(()=>{
-            this.setState({refreshing:false});
-        })
+    minus = (cart_id, item_quantity,quantity) => {
+        if(quantity < 1){
+            alert('Error quantity');
+        }else{
+            var sql = 'http:/192.168.43.35:8080/minusQty/'+cart_id;
+            axios.post(sql).then(function(response){
+                console.log(response);
+            }).then(function(error){
+                console.log(error);
+            })
+            this.setState({refreshing:true});
+            this.fetchCart().then(()=>{
+                this.setState({refreshing:false});
+            })
+        }
     }
 
-    add(cart_id){
-        var sql = 'http://192.168.43.35:8080/addQty/'+cart_id;
-        axios.post(sql).then(function(response){
-            console.log(response);
-        }).then(sql).then(function(error){
-            console.log(error);
-        })
-        this.setState({refreshing:true});
-        this.fetchCart().then(()=>{
-            this.setState({refreshing: false})
-        });
+    add(cart_id,item_quantity,quantity){
+        if(quantity >= item_quantity){
+            alert('Exceeds Stock On Hand');
+        }else{
+            var sql = 'http://192.168.43.35:8080/addQty/'+cart_id;
+            axios.post(sql).then(function(response){
+                console.log(response);
+            }).then(sql).then(function(error){
+                console.log(error);
+            })
+            this.setState({refreshing:true});
+            this.fetchCart().then(()=>{
+                this.setState({refreshing: false})
+            });
+        }
     }
 
     render() {
         const { search } = this.state;
         const { checked } = this.state;
         return(
+            <ImageBackground source={require('../images/bg.png')} style={{width: '100%', height: '100%'}}> 
                 <SafeAreaView style={{flex:1}}>
                     <View style={{flex:1}}>
-                        <View style={{ height: 80, backgroundColor: 'white',
+                        <View style={{ height: 58,
                                         borderBottomWidth:1,
                                         borderBottomColor:'#dddddd'}}>
                             <SearchBar
@@ -172,10 +191,12 @@ export class Cart extends Component {
                                 value={search}
                             />
                         </View>
-                        <View style={{ flex: 1, backgroundColor: 'white', paddingTop: 10}}>
-                            <Text style={{fontSize:24, fontWeight: '700', paddingHorizontal: 20}}>
+                        <View style={{ flex: 1,  paddingTop: 10}}>
+                            <Text style={{fontSize:24, fontWeight: '700', paddingHorizontal: 20, color: 'white'}}>
+                                <Icon name="shopping-cart" size={25} color='white'/>
                                 Cart 
                             </Text>
+                                <View style={{alignSelf: 'center',height:1,width: '90%',backgroundColor:'white'}}/>
                             <View style={{ height: 130, marginTop: 20, flex:1}}>
                                     <FlatList
                                         data={this.state.data}
@@ -186,19 +207,14 @@ export class Cart extends Component {
                                             <Swipeout right={[
                                                     {
                                                     text: 'Delete',
-                                                    backgroundColor: '#ccc',    
+                                                    backgroundColor: 'red',    
                                                     underlayColor: 'rgba(255, 0, 0, 1, 0.6)',
                                                     onPress: () => this.deleteItem(item.cart_id)
                                                     }
                                                 ]}
                                                 autoClose={true}
                                                 backgroundColor= 'transparent'>
-                                                {/* <TouchableOpacity onPress={() => this._onPressItem(item.item_id)}> */}
                                                     <View style={styles.cartContainer}>
-                                                        {/* <CheckBox
-                                                            value={this.state.checked}
-                                                            onChange={() => this.selectAllItem()}
-                                                        /> */}
                                                         <View style={styles.imageContainer}>
                                                             <Image
                                                                 style={styles.image}
@@ -207,29 +223,32 @@ export class Cart extends Component {
                                                         </View>
                                                         <View style={styles.contentContainer}>
                                                             <Text style={styles.itemName}>{item.item_name}</Text>
-                                                            {/* <TouchableOpacity> */}
-                                                                <Text style={{fontWeight: '400',fontSize: 20}}>QTY: <Icons onPress={() => this.minus(item.cart_id)} name="ios-arrow-dropleft-circle" size={35}/>   {() => this.setState({quantity:item.quantity})}{item.quantity}   <Icons onPress={() => this.add(item.cart_id)} name="ios-arrow-dropright-circle" size={35}/></Text>
-                                                            {/* </TouchableOpacity> */}
-                                                            {/* <NumericInput
-                                                                style={{alignItems: 'baseline'}} 
-                                                                value={this.state.value} 
-                                                                onChange={value => this.setState({value})} 
-                                                                onLimitReached={(isMax,msg) => console.log(isMax,msg)}
-                                                                totalWidth={60} 
-                                                                totalHeight={35} 
-                                                                iconSize={25}
-                                                                step={1}
-                                                                valueType='real'
-                                                                rounded 
-                                                                textColor='#B0228C' 
-                                                                iconStyle={{ color: 'white' }} 
-                                                                rightButtonBackgroundColor='#111a0b'
-                                                                leftButtonBackgroundColor='#111a0b'/> */}
+                                                                <Text style={{fontWeight: '400',fontSize: 15}}>QTY: <Icons onPress={() => this.minus(item.cart_id,item.item_quantity,item.quantity)} name="ios-arrow-dropleft-circle" size={35}/>   {() => this.setState({quantity:item.quantity})}{item.quantity}   <Icons onPress={() => this.add(item.cart_id,item.item_quantity,item.quantity)} name="ios-arrow-dropright-circle" size={35}/></Text>
+                                                                {/* <View style={{flexDirection:'row'}}>
+                                                                    <Text>Quantity: </Text>
+                                                                    <TextInput
+                                                                        style={{width: 40,
+                                                                            height: 40,
+                                                                            alignSelf: 'center',
+                                                                            backgroundColor: '#ccc',
+                                                                            borderRadius: 5,
+                                                                            paddingHorizontal: 16,
+                                                                            fontSize: 10,
+                                                                            color: '#ffffff',
+                                                                            marginVertical: 10
+                                                                        }}
+                                                                        placeholder=''
+                                                                        underlineColorAndroid='rgba(0,0,0,0)'
+                                                                        placeholderTextColor="black"
+                                                                        onChangeText = {qty => this.setState({qty})}
+                                                                        autoCapitalize = "none"
+                                                                        autoCorrect = {false}
+                                                                    />
+                                                                </View> */}
                                                             <Text style={styles.itemPrice}>₱{item.unit_price} / {item.unit_measure}</Text>
-                                                            <Text style={{position:'absolute', right: 5,top: 82, fontWeight: 'bold'}}>Amount: ₱{item.unit_price*item.quantity}</Text>
+                                                            <Text style={{position:'absolute', right: 5,top: 110, fontWeight: 'bold'}}>Amount: ₱{item.unit_price*item.quantity}</Text>
                                                         </View>
                                                     </View>
-                                                {/* </TouchableOpacity> */}
                                             </Swipeout>
                                         </View>
                                         }
@@ -241,13 +260,6 @@ export class Cart extends Component {
                     </View>
                     <View style={styles.footer}>
                         <View style={styles.footContainer}>
-                            {/* <View style={{backgroundColor: 'white',width:100,color: 'black', flex:1, flexDirection: 'row'}}>
-                                <CheckBox
-                                    value={this.state.checked}
-                                    onChange= {() => this.selectAllItem()}
-                                />
-                                <Text style={{fontWeight: '300', color: 'black'}}>Select All</Text>
-                            </View> */}
                             <View style={{backgroundColor: 'orange', width:'100%',borderRadius:10}}>
                                 <TouchableOpacity onPress={this.buyNow}>
                                     <Text style={{fontWeight: '300', fontSize: 20,alignSelf: 'center'}}>Buy Now</Text>
@@ -256,6 +268,7 @@ export class Cart extends Component {
                         </View>
                     </View>
                 </SafeAreaView>
+            </ImageBackground>
         );
     }
 }
@@ -266,30 +279,33 @@ const styles = StyleSheet.create({
     },
     cartContainer: {
         flex: 1,
+        borderRadius:5 ,
+        alignSelf: 'center',
         flexDirection: 'row',
-        width: Window.Width,
-        height: 100,
+        width: '98%',
+        height: 130,
         backgroundColor:'white'
     },
     imageContainer: {
         width: 100,
         height: 100,
         flex: 1,
-        padding: 10
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingBottom: 10
     },
     image: {
         height: 80,
         width: 80,
         padding: 10,
-        resizeMode:'stretch'
     },
     contentContainer: {
-        width: 20,
+        width: 30,
         height: 11,
         flex: 1
     },
     itemName: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     itemPrice: {
