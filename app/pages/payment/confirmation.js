@@ -248,10 +248,10 @@ export default class Confirmation extends Component {
                 <View style={{height:3,width: Window.width,backgroundColor:'white',paddingBottom: 3}}/>
                 <View style={{flex: 1}}>
                     <View style={{flexDirection: 'row',flex:1, padding: 10}}>
-                        <Text>SubTotal:</Text><Text style={{paddingLeft:210}}>₱{totalPrice}</Text>
+                        <Text>SubTotal:</Text><Text style={{paddingLeft:210}}>₱{totalPrice.toFixed(2)}</Text>
                     </View>
                     <View style={{flexDirection: 'row',flex:1, padding: 10}}>
-                        <Text>VAT(12%):</Text><Text style={{paddingLeft:203}}>₱{totalPrice * 0.12}</Text>
+                        <Text>VAT(12%):</Text><Text style={{paddingLeft:203}}>₱{totalPrice * 0.12.toFixed(2)}</Text>
                     </View>
                     <View
                         style={{height:2,width:'100%',backgroundColor:'black'}}
@@ -260,7 +260,7 @@ export default class Confirmation extends Component {
                         style={{height:2,width:'100%',backgroundColor:'black'}}
                     />
                     <View style={{flexDirection: 'row',flex:1, padding: 10}}>
-                        <Text>Grand Total:</Text><Text style={{paddingLeft:190}}>₱{totalPrice + (totalPrice * 0.12)}</Text>
+                        <Text>Grand Total:</Text><Text style={{paddingLeft:190}}>₱{(totalPrice + (totalPrice * 0.12)).toFixed(2)}</Text>
                     </View>
                 </View>
                 <TouchableOpacity onPress={this.placeOrder}>

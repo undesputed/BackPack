@@ -16,6 +16,7 @@ import {Platform,
 import AsyncStorage from '@react-native-community/async-storage';
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
 import myOrders from './myOrder';
+import reports from './orderItem';
 
 const Window = {
     Width:Dimensions.get("window").width,
@@ -77,7 +78,11 @@ export class Order extends Component {
     }
 
     showOrder(orderCode,status,payment) {
-        this.props.navigation.navigate('myOrder',{orderCode,status,payment})
+        if(status == 'RECEIVED'){
+            this.props.navigation.navigate('orderItem',{orderCode,status,payment});
+        }else{
+            this.props.navigation.navigate('myOrder',{orderCode,status,payment});
+        }
     }
 
 
@@ -183,7 +188,8 @@ export default class App extends Component{
 
 const AppStackContainer = createStackNavigator({
     Order: Order,
-    myOrder: myOrders
+    myOrder: myOrders,
+    orderItem: reports
 }
 );
 

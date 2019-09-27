@@ -146,7 +146,7 @@ app.get('/geItemsByOrder/:order_code',function(req,res){
 });
 
 app.get('/getOrderCode/:user_id', function(req,res){
-    con.query('select distinct(order_code),status,payment from orders where status in ("Pending","On The Way","Cancelled") and user_id = ?',[req.params.user_id],function(error,rows,fields){
+    con.query('select distinct(order_code),status,payment from orders where user_id = ? order by order_date desc',[req.params.user_id],function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -197,7 +197,7 @@ app.get('/category', function(req,res){
 });
 
 app.get('/item/:date', function(req,res){
-    con.query('select *,(select supplier_name from supplier where item_setup.supp_id = supplier.supp_id) "supplier_name" from item_setup inner join sub_categories ON item_setup.sub_category_id = sub_categories.id where date_added between DATE_ADD(? , INTERVAL -10 DAY) AND ?',[req.params.date,req.params.date], function(error,rows,fields){
+    con.query('select *,(select supplier_name from supplier where item_setup.supp_id = supplier.supp_id) "supplier_name" from item_setup inner join sub_categories ON item_setup.sub_category_id = sub_categories.id where DATE(item_setup.date_added) between DATE_ADD(? , INTERVAL -10 DAY) AND ?',[req.params.date,req.params.date], function(error,rows,fields){
         if(error) console.log(error);
         else{
             console.log(rows);
@@ -722,3 +722,25 @@ app.post('/getItemById/:item_id', function(req,res){
         }
     });
 });
+
+app.get('/searchContent/:keyword', function(req,res){
+    var sql = 'select * from item_setup inner join sub_categories on item_setup.sub_category_id = sub_categories.id where concat(item_setup.item_name,item_setup.item_description,sub_categories.sub_category_name) like "%"?"%"';
+    con.query(sql,[req.params.keyword], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    })
+});
+
+app.post('/reportOrder/:issue/:user_id/:item_id/:order_code',function(req,res){
+    var sql = 'update orders set notif_status = "UNREAD", issue = ? where user_id = ? and item_id = ? and order_code = ?';
+    con.query(sql,[req.params.issue,req.params.user_id,req.params.item_id,req.params.order_code], function(error,rows,fields){
+        if(error) console.log(error);
+        else{
+            console.log(rows);
+            res.send(rows);
+        }
+    });   
+})

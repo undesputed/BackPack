@@ -5,7 +5,7 @@ import {
     Text, 
     View, 
     Image, 
-    StatusBar, 
+    StatusBar,
     ScrollView, 
     Button,
     TouchableOpacity,
@@ -16,8 +16,10 @@ import {
     FlatList,
     RefreshControl,
     ImageBackground,
-    TextInput
+    TextInput,
+    Modal
 } from 'react-native';
+import ProgressBar from 'react-native-progress';
 import { AsyncStorage } from '@react-native-community/async-storage';
 import Category from '../component/Category';
 import Item from '../component/item';
@@ -28,6 +30,20 @@ import onCategory from './onCategory';
 import perItem from './Item';
 import newArrival from './newArrivals';
 // import { FlatList } from 'react-native-gesture-handler';
+
+const resizeComponent = (value,percentage) => {
+    return value-(value*(percentage/100));
+}
+
+const Window = {
+    Height: Dimensions.get("window").height,
+    Width: Dimensions.get("window").width
+}
+
+const cardContainerSize = { 
+    Width:resizeComponent(Window.Width, 50),
+    Height: resizeComponent(300, 5)
+}
 
 const {height, width} = Dimensions.get('window');
 export class HomePage extends Component {
@@ -47,7 +63,9 @@ export class HomePage extends Component {
             search: '',
             data: [],
             Item: [],
-            refreshing: false
+            refreshing: false,
+            content: [],
+            showModal: false
         };
     }
 
@@ -102,12 +120,60 @@ export class HomePage extends Component {
         });
     }
 
+    search = async() =>{
+        const {search} = this.state;
+        const response = await fetch('http://192.168.43.35:8080/searchContent/'+search);
+        const resContent = await response.json();
+        this.setState({content:resContent,showModal:true});
+    }
+
+    perItemClick(item_id) {
+        this.setState({showModal:false});
+        this.props.navigation.navigate('perItem',{id:item_id})
+    }
+
     render() {
         const { search } = this.state;
         return(
             <ImageBackground source={require('../images/bg.png')} style={{width: '100%', height: '100%'}}>
 
                 <SafeAreaView style={{flex:1}}>
+                    <Modal
+                        visible={this.state.showModal}
+                        onRequestClose={() => this.setState({showModal:false})}
+                    >
+                        <FlatList
+                            data={this.state.content}
+                            keyExtractor={(item,index) => index.toString()}
+                            renderItem={({item}) => 
+                            <TouchableOpacity onPress={() => this.perItemClick(item.item_id)}>                    
+                                <View style={styles.container}>
+                                    <View style={styles.cardContainer}>
+                                        <View style={styles.card}>
+                                            <Image
+                                                style={styles.image}
+                                                source={{uri:item.item_image}}
+                                                indicator={ProgressBar}
+                                                indicatorProps={{
+                                                    size: 80,
+                                                    borderWidth: 0,
+                                                    color: 'rgba(150,150,150,1)',
+                                                    unfilledColor: 'rgba(200,200,200,0.2)'
+                                                }}
+                                            />
+                                            <Text style={styles.title}>{item.item_name}</Text>
+                                            <Text numberOfLines={2} style={styles.details}>{item.item_description}</Text>
+                                            <View style={styles.priceContainer}>
+                                                <Text style={styles.price}>₱{item.unit_price}/{item.unit_measure}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                            }
+                            numColumns={2}
+                        />
+                    </Modal>
                     <View style={{flex:1}}>
                         <View style={{ height: 58,
                             borderBottomWidth:1,
@@ -127,12 +193,13 @@ export class HomePage extends Component {
                                     borderRadius: 5
                                 }}
                                 placeholder='Search'
+                                onChangeText={search => this.setState({search})}
                             />
-                            <Button
-                                title='Search'
-                                color='skyblue'
-                                style={{height: 30,padding: 10,borderRadius: 5}}
-                            />
+                            <TouchableOpacity onPress={this.search}>
+                                <View style={{height: 30, padding: 10, borderRadius: 5}}>
+                                    <Text style={{padding: 10}}>Search</Text>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     <ScrollView
                         refreshControl={
@@ -277,6 +344,54 @@ export class HomePage extends Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    cardContainer: { 
+        height: 280,
+        width: cardContainerSize.Width,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    card: {
+        height: resizeComponent(280, 5),
+        width: resizeComponent(cardContainerSize.Width,5),
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5
+    },
+    image: {
+        width: resizeComponent(cardContainerSize.Width, 7),
+        height: 151,
+        resizeMode: 'stretch'
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+    priceContainer: {
+        position: 'absolute',
+        bottom: 10,
+        right: 10
+    },
+    price: {
+        fontSize: 13,
+        fontWeight: 'bold'
+    },
+    details: {
+        fontSize: 13,
+        color: '#3c3c3c',
+        paddingLeft: 10,
+        paddingRight: 10
+    } 
+});
 
 export default class App extends Component{
     render(){

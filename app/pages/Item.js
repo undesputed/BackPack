@@ -214,7 +214,7 @@ export default class App extends Component {
                                             borderRadius: 5,
                                             paddingHorizontal: 16,
                                             fontSize: 16,
-                                            color: '#ffffff',
+                                            color: 'black',
                                             marginVertical: 10
                                         }}
                                         placeholder= '1'
