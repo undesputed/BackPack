@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native'
 import Button from 'apsl-react-native-button';
 import { createStackNavigator } from 'react-navigation';
 

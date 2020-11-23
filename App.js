@@ -3,10 +3,10 @@ import React, {Component} from 'react';
 import {StyleSheet, View, StatusBar, ActivityIndicator, AsyncStorage} from 'react-native';
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from 'react-navigation';
 
-import Login from './app/pages/login';
-import Signup from './app/pages/signup';
-import Home from './app/pages/Home';
-import Category from './app/pages/category';
+import Login from './app/pages/login'
+import Signup from './app/pages/signup'
+import Home from './app/pages/Home'
+import Category from './app/pages/category'
 
 export default class App extends Component {
   static navigationOptions = {

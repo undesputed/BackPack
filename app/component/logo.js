@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Image, StatusBar} from 'react-native';
+import {Platform, StyleSheet, Text, View, Image, StatusBar} from 'react-native'
 
 export default class Logo extends Component {
     render(){
